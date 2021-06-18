@@ -184,3 +184,67 @@ func clusterCreateCommand(c *cobra.Command, args []string) error {
 
 	return nil
 }
+
+func getclustername(args []string) (string, error) {
+	if len(args) == 0 {
+		clustername, ok := cli.Default("cluster")
+		if !ok {
+			return "", cli.WrapErrorMessage(
+				1,
+				"no cluster specified and default cluster not set. Use --cluster, or select a default cluster using 'kutti cluster select'",
+			)
+		}
+
+		return clustername, nil
+	}
+
+	return args[0], nil
+}
+
+func clusterUpCommand(c *cobra.Command, args []string) error {
+	c.SilenceUsage = true
+
+	clustername, err := getclustername(args)
+	if err != nil {
+		return err
+	}
+
+	cluster, ok := kuttilib.GetCluster(clustername)
+	if !ok {
+		return cli.WrapErrorMessagef(
+			2,
+			"cluster '%v' not found",
+			clustername,
+		)
+	}
+
+	for _, nodename := range cluster.NodeNames() {
+		StartNode(cluster, nodename)
+	}
+
+	return nil
+}
+
+func clusterDownCommand(c *cobra.Command, args []string) error {
+	c.SilenceUsage = true
+
+	clustername, err := getclustername(args)
+	if err != nil {
+		return err
+	}
+
+	cluster, ok := kuttilib.GetCluster(clustername)
+	if !ok {
+		return cli.WrapErrorMessagef(
+			2,
+			"cluster '%v' not found",
+			clustername,
+		)
+	}
+
+	for _, nodename := range cluster.NodeNames() {
+		StopNode(cluster, nodename)
+	}
+
+	return nil
+}

@@ -8,6 +8,7 @@ import (
 	"github.com/kuttiproject/kuttilib"
 
 	"github.com/kuttiproject/kutti/internal/pkg/cli"
+	clustercmd "github.com/kuttiproject/kutti/internal/pkg/cmd/cluster"
 
 	"github.com/spf13/cobra"
 )
@@ -200,11 +201,11 @@ func nodeStartCommand(c *cobra.Command, args []string) error {
 	}
 
 	if len(args) == 1 {
-		return StartNode(cluster, args[0])
+		return clustercmd.StartNode(cluster, args[0])
 	}
 
 	for _, nodename := range args {
-		err = StartNode(cluster, nodename)
+		err = clustercmd.StartNode(cluster, nodename)
 		if err != nil {
 			kuttilog.Printf(kuttilog.Info, "Warning: %v.", err)
 		}
@@ -222,11 +223,11 @@ func nodeStopCommand(c *cobra.Command, args []string) error {
 	}
 
 	if len(args) == 1 {
-		return StopNode(cluster, args[0])
+		return clustercmd.StopNode(cluster, args[0])
 	}
 
 	for _, nodename := range args {
-		err = StopNode(cluster, nodename)
+		err = clustercmd.StopNode(cluster, nodename)
 		if err != nil {
 			kuttilog.Printf(kuttilog.Info, "Warning: %v.", err)
 		}

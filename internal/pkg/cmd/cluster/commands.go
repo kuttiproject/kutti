@@ -102,5 +102,29 @@ var clusterCmd = &cli.Command{
 				)
 			},
 		},
+		{
+			Cmd: &cobra.Command{
+				Use:                   "up [CLUSTERNAME]",
+				Aliases:               []string{"start"},
+				Args:                  cobra.RangeArgs(0, 1),
+				ValidArgsFunction:     ClusterNameValidArgs,
+				Short:                 "Start cluster",
+				RunE:                  clusterUpCommand,
+				SilenceErrors:         true,
+				DisableFlagsInUseLine: true,
+			},
+		},
+		{
+			Cmd: &cobra.Command{
+				Use:                   "down [CLUSTERNAME]",
+				Aliases:               []string{"stop"},
+				Args:                  cobra.RangeArgs(0, 1),
+				ValidArgsFunction:     ClusterNameValidArgs,
+				Short:                 "Stop cluster",
+				RunE:                  clusterDownCommand,
+				SilenceErrors:         true,
+				DisableFlagsInUseLine: true,
+			},
+		},
 	},
 }
