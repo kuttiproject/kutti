@@ -12,10 +12,11 @@ else
 	DEL ?= rm -r
 endif
 
-KUTTICMDFILES = cmd/kutti/*.go        \
-				internal/pkg/cli/*.go \
-				internal/pkg/cmd/*.go \
-				internal/pkg/cmd/*/*.go
+KUTTICMDFILES = cmd/kutti/*.go          \
+				internal/pkg/cli/*.go   \
+				internal/pkg/cmd/*.go   \
+				internal/pkg/cmd/*/*.go \
+				go.mod
 
 # Targets
 .PHONY: usage
