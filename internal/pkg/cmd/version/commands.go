@@ -30,7 +30,7 @@ var versionCmd = &cli.Command{
 				Aliases:               []string{"get", "inspect", "describe"},
 				Args:                  cobra.ExactValidArgs(1),
 				ValidArgsFunction:     VersionNameValidArgs,
-				Short:                 "Show details of a driver",
+				Short:                 "Show details of a version",
 				RunE:                  versionShowCommand,
 				DisableFlagsInUseLine: true,
 			},
