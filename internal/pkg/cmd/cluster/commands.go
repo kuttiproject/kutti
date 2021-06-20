@@ -84,8 +84,8 @@ var clusterCmd = &cli.Command{
 			SetFlagsFunc: func(c *cobra.Command) {
 				version.SetDriverFlag(c)
 
-				c.Flags().StringP("image", "i", "", "image to create the cluster from")
-				c.RegisterFlagCompletionFunc("image", version.VersionNameValidArgs)
+				c.Flags().StringP("version", "v", "", "K8s version for the cluster")
+				c.RegisterFlagCompletionFunc("version", version.VersionNameValidArgs)
 
 				c.Flags().BoolP(
 					"unmanaged",

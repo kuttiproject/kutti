@@ -14,16 +14,16 @@ import (
 )
 
 func getimagename(c *cobra.Command) (string, error) {
-	imagename, _ := c.Flags().GetString("image")
+	imagename, _ := c.Flags().GetString("version")
 	if imagename != "" {
 		return imagename, nil
 	}
 
-	imagename, ok := cli.Default("image")
+	imagename, ok := cli.Default("version")
 	if !ok {
 		return "", cli.WrapErrorMessage(
 			1,
-			"no image specified and default image not set. Use --image, or select a default image using 'kutti image select'",
+			"no version specified and default version not set. Use --version, or select a default version using 'kutti version select'",
 		)
 	}
 
