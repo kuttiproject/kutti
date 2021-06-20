@@ -156,7 +156,7 @@ func clusterCreateCommand(c *cobra.Command, args []string) error {
 	if !unmanaged {
 		return cli.WrapErrorMessage(
 			1,
-			"managed cluster creation not yet implemented",
+			"managed cluster creation not yet implemented. Use --unmanaged",
 		)
 	}
 

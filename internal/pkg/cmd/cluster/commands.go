@@ -59,24 +59,24 @@ var clusterCmd = &cli.Command{
 		},
 		{
 			Cmd: &cobra.Command{
-				Use:               "rm CLUSTERNAME",
-				Aliases:           []string{"remove", "delete", "del"},
-				Args:              cobra.ExactValidArgs(1),
-				ValidArgsFunction: ClusterNameValidArgs,
-				Short:             "Remove cluster",
-				RunE:              clusterRmCommand,
-				SilenceErrors:     true,
+				Use:                   "rm CLUSTERNAME",
+				Aliases:               []string{"remove", "delete", "del"},
+				Args:                  cobra.ExactValidArgs(1),
+				ValidArgsFunction:     ClusterNameValidArgs,
+				Short:                 "Remove cluster",
+				RunE:                  clusterRmCommand,
+				SilenceErrors:         true,
+				DisableFlagsInUseLine: true,
 			},
-			SetFlagsFunc: func(c *cobra.Command) {
-				c.Flags().BoolP("force", "f", false, "forcibly remove cluster")
-			},
+			// SetFlagsFunc: func(c *cobra.Command) {
+			// 	c.Flags().BoolP("force", "f", false, "forcibly remove cluster")
+			// },
 		},
 		{
 			Cmd: &cobra.Command{
 				Use:           "create CLUSTERNAME",
 				Aliases:       []string{"add"},
 				Short:         "Create a new cluster",
-				Long:          `Create a new cluster.`,
 				Args:          cobra.ExactArgs(1),
 				RunE:          clusterCreateCommand,
 				SilenceErrors: true,
