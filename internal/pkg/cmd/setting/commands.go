@@ -8,9 +8,10 @@ import (
 
 var configcommand = &cli.Command{
 	Cmd: &cobra.Command{
-		Use:   "setting",
-		Short: "Manage configuration settings",
-		Long:  `Manage configuration settings.`,
+		Use:    "setting",
+		Short:  "Manage configuration settings",
+		Long:   `Manage configuration settings.`,
+		Hidden: true,
 	},
 	SetFlagsFunc: nil,
 	Subcommands: []*cli.Command{
@@ -33,7 +34,9 @@ var configcommand = &cli.Command{
 				Short:   "Gets a configuration setting",
 				Long: `Gets a configuration setting. If the specified setting does not exist, 
 outputs an empty string and exits with error code 2.`,
-				RunE: configGetCommand,
+				RunE:          configGetCommand,
+				SilenceErrors: true,
+				SilenceUsage:  true,
 			},
 			SetFlagsFunc: func(c *cobra.Command) {
 				c.Flags().BoolP(
@@ -54,12 +57,15 @@ outputs an empty string and exits with error code 2.`,
 		},
 		{
 			Cmd: &cobra.Command{
-				Use:     "rm SETTINGNAME",
-				Aliases: []string{"remove", "delete", "del"},
-				Args:    cobra.ExactArgs(1),
-				Short:   "Removes a configuration setting",
-				Long:    `Removes a configuration setting.`,
-				RunE:    comfigRmCommand,
+				Use:                   "rm SETTINGNAME",
+				Aliases:               []string{"remove", "delete", "del"},
+				Args:                  cobra.ExactArgs(1),
+				Short:                 "Removes a configuration setting",
+				Long:                  `Removes a configuration setting.`,
+				RunE:                  comfigRmCommand,
+				DisableFlagsInUseLine: true,
+				SilenceErrors:         true,
+				SilenceUsage:          true,
 			},
 		},
 	},
