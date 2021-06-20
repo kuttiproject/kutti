@@ -165,7 +165,7 @@ func versionRmCommand(c *cobra.Command, args []string) error {
 		return err
 	}
 
-	kuttilog.Printf(kuttilog.Info, "Removing image for Kubernetes version '%v'...\n")
+	kuttilog.Printf(kuttilog.Info, "Removing image for Kubernetes version '%v'...\n", versionname)
 	err = version.PurgeLocal()
 	if err != nil {
 		return cli.WrapErrorMessagef(

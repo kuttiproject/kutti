@@ -19,6 +19,9 @@ type TableColumn struct {
 	DefaultCheck bool
 	// Width specifies the column width in characters.
 	Width int
+	// FormatPrefix specifies any go template function that
+	// should precede the value.
+	FormatPrefix string
 }
 
 // TableRenderer generates tabular output given a set of TableColumns.
@@ -53,17 +56,30 @@ func (f *TableRenderer) prepare() string {
 			"{{ ",
 		)
 
-		if column.DefaultCheck {
-			fmt.Fprint(
+		if column.FormatPrefix != "" {
+			fmt.Fprintf(
 				&bodybuilder,
-				"decoratedefault ",
+				"%v ",
+				column.FormatPrefix,
 			)
 		}
 
 		fmt.Fprintf(
 			&bodybuilder,
-			".%v }}\t",
+			".%v ",
 			column.Name,
+		)
+
+		if column.DefaultCheck {
+			fmt.Fprint(
+				&bodybuilder,
+				"| decoratedefault ",
+			)
+		}
+
+		fmt.Fprint(
+			&bodybuilder,
+			" }}\t",
 		)
 	}
 

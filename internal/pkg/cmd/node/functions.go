@@ -32,6 +32,7 @@ func getCluster(c *cobra.Command) (*kuttilib.Cluster, error) {
 		return nil, cli.WrapErrorMessagef(
 			2,
 			"cluster '%v' not found",
+			clustername,
 		)
 	}
 
@@ -51,6 +52,7 @@ func nodeLsCommand(c *cobra.Command, args []string) error {
 		[]*cli.TableColumn{
 			{Name: "Name", Width: 15, DefaultCheck: true},
 			{Name: "Status", Width: 15},
+			{Name: "CreatedAt", Title: "Created", Width: 15},
 		},
 		"",
 	)
@@ -131,7 +133,7 @@ func nodeCreateCommand(cmd *cobra.Command, args []string) error {
 	if err != nil {
 		return cli.WrapErrorMessagef(
 			1,
-			"could not create node '%v': %v.",
+			"could not create node '%v': %v",
 			nodename,
 			err,
 		)
@@ -143,7 +145,7 @@ func nodeCreateCommand(cmd *cobra.Command, args []string) error {
 	if driver.UsesNATNetworking() && sshport == 0 {
 		return cli.WrapErrorMessagef(
 			1,
-			"SSH port forwarding required for nodes in the '%v' cluster.",
+			"SSH port forwarding required for nodes in the '%v' cluster",
 			cluster.Name(),
 		)
 	}
@@ -154,7 +156,7 @@ func nodeCreateCommand(cmd *cobra.Command, args []string) error {
 		if err != nil {
 			return cli.WrapErrorMessagef(
 				1,
-				"Error: Cannot use host port %v: %v.",
+				"cannot use host port %v: %v",
 				sshport,
 				err,
 			)
@@ -284,7 +286,7 @@ func nodePublishCommand(c *cobra.Command, args []string) error {
 	if err != nil {
 		return cli.WrapErrorMessagef(
 			1,
-			"could not forward node port %v to host port %v: %v.",
+			"could not forward node port %v to host port %v: %v",
 			nodeport,
 			hostport,
 			err,
@@ -335,7 +337,7 @@ func nodeUnpublishCommand(c *cobra.Command, args []string) error {
 	if err != nil {
 		return cli.WrapErrorMessagef(
 			1,
-			"could not unforward node port %v: %v.",
+			"could not unforward node port %v: %v",
 			nodeport,
 			err,
 		)

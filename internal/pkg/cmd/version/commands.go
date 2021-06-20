@@ -80,7 +80,7 @@ var versionCmd = &cli.Command{
 		{
 			Cmd: &cobra.Command{
 				Use:                   "rm K8SVERSION",
-				Aliases:               []string{"remove", "delete", "del"},
+				Aliases:               []string{"remove", "delete", "del", "purge", "purgelocal"},
 				Args:                  cobra.ExactValidArgs(1),
 				ValidArgsFunction:     VersionNameValidArgs,
 				Short:                 "Remove version image",
