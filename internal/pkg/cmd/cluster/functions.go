@@ -49,7 +49,7 @@ func clusterLsCommand(c *cobra.Command, args []string) {
 			{Name: "DriverName", Title: "Driver", Width: 15},
 			{Name: "K8sVersion", Title: "K8s Version", Width: 15},
 			{Name: "Type", Width: 15},
-			{Name: "CreatedAt", Title: "Created", Width: 15},
+			{Name: "CreatedAt", Title: "Created", Width: 15, FormatPrefix: "prettytime"},
 			{Name: "Nodes", Width: 5, FormatPrefix: `len`},
 		},
 		defaultcluster,

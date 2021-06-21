@@ -62,7 +62,7 @@ func nodeLsCommand(c *cobra.Command, args []string) error {
 		[]*cli.TableColumn{
 			{Name: "Name", Width: 15, DefaultCheck: true},
 			{Name: "Status", Width: 15},
-			{Name: "CreatedAt", Title: "Created", Width: 15},
+			{Name: "CreatedAt", Title: "Created", Width: 15, FormatPrefix: "prettytime"},
 		},
 		"",
 	)

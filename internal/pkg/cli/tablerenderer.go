@@ -125,6 +125,7 @@ func NewTableRenderer(
 
 			return value
 		},
+		"prettytime": prettyTime,
 	})
 
 	templatestring := result.prepare()
