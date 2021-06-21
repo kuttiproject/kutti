@@ -1,6 +1,7 @@
 package driver
 
 import (
+	"fmt"
 	"os"
 
 	"github.com/kuttiproject/kuttilog"
@@ -13,6 +14,15 @@ import (
 )
 
 func driverLsCommand(c *cobra.Command, args []string) {
+	quiet, _ := c.Root().PersistentFlags().GetBool("quiet")
+	if quiet {
+		drivernames := kuttilib.DriverNames()
+		for _, drivername := range drivernames {
+			fmt.Println(drivername)
+		}
+		return
+	}
+
 	defaultdriver, _ := cli.Default("driver")
 
 	var driverlsFormatter = cli.NewTableRenderer(

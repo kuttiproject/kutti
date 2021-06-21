@@ -1,6 +1,7 @@
 package node
 
 import (
+	"fmt"
 	"os"
 
 	"github.com/kuttiproject/kuttilog"
@@ -45,6 +46,15 @@ func nodeLsCommand(c *cobra.Command, args []string) error {
 	cluster, err := getCluster(c)
 	if err != nil {
 		return err
+	}
+
+	quiet, _ := c.Root().PersistentFlags().GetBool("quiet")
+	if quiet {
+		nodenames := cluster.NodeNames()
+		for _, nodename := range nodenames {
+			fmt.Println(nodename)
+		}
+		return nil
 	}
 
 	var nodelsFormatter = cli.NewTableRenderer(

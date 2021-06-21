@@ -1,6 +1,7 @@
 package version
 
 import (
+	"fmt"
 	"os"
 
 	"github.com/kuttiproject/kuttilog"
@@ -44,6 +45,15 @@ func versionlsCommand(c *cobra.Command, args []string) error {
 	driver, err := getDriver(c)
 	if err != nil {
 		return err
+	}
+
+	quiet, _ := c.Root().PersistentFlags().GetBool("quiet")
+	if quiet {
+		versionnames := driver.VersionNames()
+		for _, versionname := range versionnames {
+			fmt.Println(versionname)
+		}
+		return nil
 	}
 
 	defaultversion, _ := cli.Default("version")

@@ -1,6 +1,7 @@
 package cluster
 
 import (
+	"fmt"
 	"os"
 
 	"github.com/kuttiproject/kuttilog"
@@ -31,6 +32,15 @@ func getimagename(c *cobra.Command) (string, error) {
 }
 
 func clusterLsCommand(c *cobra.Command, args []string) {
+	quiet, _ := c.Root().PersistentFlags().GetBool("quiet")
+	if quiet {
+		clusternames := kuttilib.ClusterNames()
+		for _, clustername := range clusternames {
+			fmt.Println(clustername)
+		}
+		return
+	}
+
 	defaultcluster, _ := cli.Default("cluster")
 	var clusterlsFormatter = cli.NewTableRenderer(
 		"driverls",
