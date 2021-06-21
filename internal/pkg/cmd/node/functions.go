@@ -10,6 +10,7 @@ import (
 
 	"github.com/kuttiproject/kutti/internal/pkg/cli"
 	clustercmd "github.com/kuttiproject/kutti/internal/pkg/cmd/cluster"
+	"github.com/kuttiproject/kutti/internal/pkg/sshclient"
 
 	"github.com/spf13/cobra"
 )
@@ -362,6 +363,67 @@ func nodeUnpublishCommand(c *cobra.Command, args []string) error {
 	} else {
 		kuttilog.Println(kuttilog.Minimal, nodeport)
 	}
+
+	return nil
+}
+
+func nodeSSHCommand(c *cobra.Command, args []string) error {
+	c.SilenceUsage = true
+
+	cluster, err := getCluster(c)
+	if err != nil {
+		return err
+	}
+
+	if !cluster.Driver().UsesNATNetworking() {
+		return cli.WrapErrorMessage(
+			1,
+			"the SSH command currently on works on clusters that use NAT networking",
+		)
+	}
+
+	nodename := args[0]
+	node, ok := cluster.GetNode(nodename)
+	if !ok {
+		return cli.WrapErrorMessagef(
+			2,
+			"node '%v' not found",
+			nodename,
+		)
+	}
+
+	if node.Status() != "Running" {
+		return cli.WrapErrorMessagef(
+			1,
+			"node '%v' is not running",
+			nodename,
+		)
+	}
+
+	sshport, ok := node.Ports()[22]
+	if !ok {
+		return cli.WrapErrorMessagef(
+			1,
+			"the SSH port of node '%s' has not been forwarded",
+			nodename,
+		)
+	}
+
+	username, _ := c.Flags().GetString("username")
+	if username == "" {
+		username = "user1"
+	}
+
+	password, _ := c.Flags().GetString("password")
+	if username == "" {
+		password = "Pass@word1"
+	}
+
+	kuttilog.Printf(kuttilog.Info, "Connecting to node %s...", nodename)
+	address := fmt.Sprintf("localhost:%v", sshport)
+	client := sshclient.NewWithPassword(username, password)
+
+	client.RunInterativeShell(address)
 
 	return nil
 }

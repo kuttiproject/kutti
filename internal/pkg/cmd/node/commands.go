@@ -122,5 +122,21 @@ var nodeCmd = &cli.Command{
 				c.MarkFlagRequired("nodeport")
 			},
 		},
+		{
+			Cmd: &cobra.Command{
+				Use:               "ssh NODENAME",
+				Short:             "Open an SSH connection to the node",
+				Args:              cobra.ExactValidArgs(1),
+				ValidArgsFunction: NodeNameValidArgs,
+				RunE:              nodeSSHCommand,
+				SilenceErrors:     true,
+			},
+			SetFlagsFunc: func(c *cobra.Command) {
+				SetClusterFlag(c)
+
+				c.Flags().StringP("username", "u", "user1", "username for SSH connection")
+				c.Flags().StringP("password", "p", "Pass@word1", "username for SSH connection")
+			},
+		},
 	},
 }

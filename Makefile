@@ -19,9 +19,9 @@ KUTTICMDFILES = cmd/kutti/*.go          \
 				go.mod
 
 # Targets
-.PHONY: usage
-usage:
-	@echo "Usage: make windows|linux|clean"
+# .PHONY: usage
+# usage:
+# 	@echo "Usage: make windows|linux|clean"
 
 out/kutti: $(KUTTICMDFILES)
 	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o $@ -ldflags "-X main.version=${VERSION_STRING}" cmd/kutti/*.go
