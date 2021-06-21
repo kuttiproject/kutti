@@ -16,3 +16,6 @@
 
 # Output directory
 out/
+
+# Generated resource files
+*.syso

@@ -26,9 +26,9 @@ usage:
 out/kutti_linux_amd64: $(KUTTICMDFILES)
 	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o $@ -ldflags "-X main.version=${VERSION_STRING}" cmd/kutti/*.go
 
-
-out/kutti_windows_amd64.exe: $(KUTTICMDFILES)
-	CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build -o $@ -ldflags "-X main.version=${VERSION_STRING}" cmd/kutti/*.go
+out/kutti_windows_amd64.exe: $(KUTTICMDFILES) cmd/kutti/winres/*
+	cd cmd/kutti && GOOS=windows GOARCH=amd64 go generate
+	cd cmd/kutti && CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build -o ../../$@ -ldflags "-X main.version=${VERSION_STRING}"
 
 .PHONY: windows
 windows: out/kutti_windows_amd64.exe
@@ -39,6 +39,13 @@ linux: out/kutti_linux_amd64
 .PHONY: all
 all: linux windows
 
-.PHONY: clean
-clean:
+.PHONY: resourceclean
+resourceclean: cmd/kutti/*.syso
+	$(DEL) cmd/kutti/*.syso
+
+.PHONY: binclean
+binclean: out/*
 	$(DEL) out/
+
+.PHONY: clean
+clean: binclean resourceclean
