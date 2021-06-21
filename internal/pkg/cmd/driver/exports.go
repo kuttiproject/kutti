@@ -8,11 +8,12 @@ import (
 	"github.com/spf13/cobra"
 )
 
+// CommandTree returns the top level driver command
 func CommandTree() *cli.Command {
 	return drivercommand
 }
 
-// DriverNameValidArgs returns driver names as per Cobra argument
+// DrivernameValidArgs returns driver names as per Cobra argument
 // validation rules.
 func DrivernameValidArgs(c *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 	possibilities := kuttilib.DriverNames()

@@ -9,13 +9,14 @@ import (
 	"github.com/spf13/cobra"
 )
 
+// CommandTree returns the top level cluster command
 func CommandTree() *cli.Command {
 	return clusterCmd
 }
 
-// ClusterNameValidArgs returns cluster names as per Cobra argument
+// NameValidArgs returns cluster names as per Cobra argument
 // validation rules.
-func ClusterNameValidArgs(c *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+func NameValidArgs(c *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 	possibilities := kuttilib.ClusterNames()
 	return cli.StringCompletions(possibilities, toComplete)
 }

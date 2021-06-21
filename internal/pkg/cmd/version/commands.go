@@ -10,6 +10,7 @@ var versionCmd = &cli.Command{
 	Cmd: &cobra.Command{
 		Use:   "version",
 		Short: "Manage Kubernetes versions",
+		Run:   versionCommand,
 	},
 	Subcommands: []*cli.Command{
 		{
@@ -29,7 +30,7 @@ var versionCmd = &cli.Command{
 				Use:                   "show K8SVERSION",
 				Aliases:               []string{"get", "inspect", "describe"},
 				Args:                  cobra.ExactValidArgs(1),
-				ValidArgsFunction:     VersionNameValidArgs,
+				ValidArgsFunction:     NameValidArgs,
 				Short:                 "Show details of a version",
 				RunE:                  versionShowCommand,
 				DisableFlagsInUseLine: true,
@@ -40,7 +41,7 @@ var versionCmd = &cli.Command{
 				Use:                   "select K8SVERSION",
 				Aliases:               []string{"setdefault", "default"},
 				Args:                  cobra.ExactValidArgs(1),
-				ValidArgsFunction:     VersionNameValidArgs,
+				ValidArgsFunction:     NameValidArgs,
 				Short:                 "Select default version",
 				RunE:                  versionSelectCommand,
 				SilenceErrors:         true,
@@ -64,7 +65,7 @@ var versionCmd = &cli.Command{
 				Use:                   "pull [flags] K8SVERSION",
 				Aliases:               []string{"fetch", "get"},
 				Args:                  cobra.ExactValidArgs(1),
-				ValidArgsFunction:     VersionNameValidArgs,
+				ValidArgsFunction:     NameValidArgs,
 				Short:                 "Download version image",
 				RunE:                  versionPullCommand,
 				SilenceErrors:         true,
@@ -82,7 +83,7 @@ var versionCmd = &cli.Command{
 				Use:                   "rm K8SVERSION",
 				Aliases:               []string{"remove", "delete", "del", "purge", "purgelocal"},
 				Args:                  cobra.ExactValidArgs(1),
-				ValidArgsFunction:     VersionNameValidArgs,
+				ValidArgsFunction:     NameValidArgs,
 				Short:                 "Remove version image",
 				RunE:                  versionRmCommand,
 				SilenceErrors:         true,

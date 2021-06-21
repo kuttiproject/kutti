@@ -10,6 +10,7 @@ type Command struct {
 	Subcommands  []*Command
 }
 
+// Process adds flags and subcommands recursively.
 func (kc *Command) Process(parent *cobra.Command) {
 	if kc.Cmd == nil {
 		panic("No command to process.")

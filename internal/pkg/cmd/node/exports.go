@@ -7,6 +7,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
+// CommandTree returns the top level node command
 func CommandTree() *cli.Command {
 	return nodeCmd
 }
@@ -18,13 +19,13 @@ func SetClusterFlag(c *cobra.Command) {
 
 	c.RegisterFlagCompletionFunc(
 		"cluster",
-		cluster.ClusterNameValidArgs,
+		cluster.NameValidArgs,
 	)
 }
 
-// NodeNameValidArgs returns node names as per Cobra argument
+// NameValidArgs returns node names as per Cobra argument
 // validation rules.
-func NodeNameValidArgs(c *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+func NameValidArgs(c *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 	cluster, err := getCluster(c)
 	if err != nil {
 		return []string{}, cobra.ShellCompDirectiveError | cobra.ShellCompDirectiveNoFileComp

@@ -28,7 +28,7 @@ var clusterCmd = &cli.Command{
 				Use:                   "show CLUSTERNAME",
 				Aliases:               []string{"get", "inspect", "describe"},
 				Args:                  cobra.ExactValidArgs(1),
-				ValidArgsFunction:     ClusterNameValidArgs,
+				ValidArgsFunction:     NameValidArgs,
 				Short:                 "Show details of a cluster",
 				RunE:                  clusterShowCommand,
 				DisableFlagsInUseLine: true,
@@ -39,7 +39,7 @@ var clusterCmd = &cli.Command{
 				Use:                   "select CLUSTERNAME",
 				Aliases:               []string{"setdefault", "default"},
 				Args:                  cobra.ExactValidArgs(1),
-				ValidArgsFunction:     ClusterNameValidArgs,
+				ValidArgsFunction:     NameValidArgs,
 				Short:                 "Select default cluster",
 				RunE:                  clusterSelectCommand,
 				SilenceErrors:         true,
@@ -62,7 +62,7 @@ var clusterCmd = &cli.Command{
 				Use:                   "rm CLUSTERNAME",
 				Aliases:               []string{"remove", "delete", "del"},
 				Args:                  cobra.ExactValidArgs(1),
-				ValidArgsFunction:     ClusterNameValidArgs,
+				ValidArgsFunction:     NameValidArgs,
 				Short:                 "Remove cluster",
 				RunE:                  clusterRmCommand,
 				SilenceErrors:         true,
@@ -85,7 +85,7 @@ var clusterCmd = &cli.Command{
 				version.SetDriverFlag(c)
 
 				c.Flags().StringP("version", "v", "", "K8s version for the cluster")
-				c.RegisterFlagCompletionFunc("version", version.VersionNameValidArgs)
+				c.RegisterFlagCompletionFunc("version", version.NameValidArgs)
 
 				c.Flags().BoolP(
 					"unmanaged",
@@ -107,7 +107,7 @@ var clusterCmd = &cli.Command{
 				Use:                   "up [CLUSTERNAME]",
 				Aliases:               []string{"start"},
 				Args:                  cobra.RangeArgs(0, 1),
-				ValidArgsFunction:     ClusterNameValidArgs,
+				ValidArgsFunction:     NameValidArgs,
 				Short:                 "Start cluster",
 				RunE:                  clusterUpCommand,
 				SilenceErrors:         true,
@@ -119,7 +119,7 @@ var clusterCmd = &cli.Command{
 				Use:                   "down [CLUSTERNAME]",
 				Aliases:               []string{"stop"},
 				Args:                  cobra.RangeArgs(0, 1),
-				ValidArgsFunction:     ClusterNameValidArgs,
+				ValidArgsFunction:     NameValidArgs,
 				Short:                 "Stop cluster",
 				RunE:                  clusterDownCommand,
 				SilenceErrors:         true,

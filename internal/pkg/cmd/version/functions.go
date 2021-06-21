@@ -194,3 +194,14 @@ func versionRmCommand(c *cobra.Command, args []string) error {
 
 	return nil
 }
+
+func versionCommand(c *cobra.Command, args []string) {
+	rootcmd := c.Root()
+	quiet, _ := rootcmd.PersistentFlags().GetBool("quiet")
+	if quiet {
+		fmt.Println(rootcmd.Version)
+		return
+	}
+
+	fmt.Printf("kutti version %v\n", rootcmd.Version)
+}

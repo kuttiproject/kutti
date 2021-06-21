@@ -13,10 +13,8 @@ import (
 	"golang.org/x/crypto/ssh"
 )
 
-const (
-	commandSetHostName = "sudo rw-installscripts/set-hostname.sh %s"
-)
-
+// SSHClient represents a simple SSH client, which uses password
+// authentication.
 type SSHClient struct {
 	config *ssh.ClientConfig
 }
@@ -144,7 +142,7 @@ func (sc *SSHClient) runclient(ctx context.Context, address string) error {
 	return nil
 }
 
-// New creates a new SSH client with password authentication, and no host key check
+// NewWithPassword creates a new SSH client with password authentication, and no host key check
 func NewWithPassword(username string, password string) *SSHClient {
 	return &SSHClient{
 		config: &ssh.ClientConfig{

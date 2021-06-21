@@ -9,13 +9,14 @@ import (
 	"github.com/spf13/cobra"
 )
 
+// CommandTree returns the top level version command
 func CommandTree() *cli.Command {
 	return versionCmd
 }
 
-// VersionNameValidArgs returns Kubernetes version strings as per Cobra argument
+// NameValidArgs returns Kubernetes version strings as per Cobra argument
 // validation rules.
-func VersionNameValidArgs(c *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+func NameValidArgs(c *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 	driver, err := getDriver(c)
 	if err != nil {
 		return []string{}, cobra.ShellCompDirectiveError | cobra.ShellCompDirectiveNoFileComp
