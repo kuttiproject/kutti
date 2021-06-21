@@ -28,8 +28,8 @@ var rootCmd = &cli.Command{
 		completions.CommandTree(),
 		setting.CommandTree(),
 		driver.CommandTree(),
-		cluster.CommandTree(),
 		version.CommandTree(),
+		cluster.CommandTree(),
 		node.CommandTree(),
 		// Add more commands here
 	},
