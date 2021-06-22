@@ -10,7 +10,6 @@ var versionCmd = &cli.Command{
 	Cmd: &cobra.Command{
 		Use:   "version",
 		Short: "Manage Kubernetes versions",
-		Run:   versionCommand,
 	},
 	Subcommands: []*cli.Command{
 		{

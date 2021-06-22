@@ -5,13 +5,6 @@ BUILD_NUMBER  ?= 0
 PATCH_NUMBER  ?= 
 VERSION_STRING = $(VERSION_MAJOR).$(VERSION_MINOR).$(BUILD_NUMBER)$(PATCH_NUMBER)
 
-# Windows vs Unixlikes
-ifdef COMSPEC
-	DEL ?= del /s
-else
-	DEL ?= rm -r
-endif
-
 KUTTICMDFILES = cmd/kutti/*.go          \
 				internal/pkg/cli/*.go   \
 				internal/pkg/cmd/*.go   \
@@ -24,11 +17,11 @@ usage:
 	@echo "Usage: make windows|linux|clean"
 
 out/kutti_linux_amd64: $(KUTTICMDFILES)
-	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o $@ -ldflags "-X main.version=${VERSION_STRING}" cmd/kutti/*.go
+	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o $@ -ldflags "-X main.version=${VERSION_STRING}" ./cmd/kutti/
 
 out/kutti_windows_amd64.exe: $(KUTTICMDFILES) cmd/kutti/winres/*
-	cd cmd/kutti && GOOS=windows GOARCH=amd64 go generate
-	cd cmd/kutti && CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build -o ../../$@ -ldflags "-X main.version=${VERSION_STRING}"
+	go-winres make --in=cmd/kutti/winres/winres.json --out=cmd/kutti/rsrc --arch=amd64 --product-version=${VERSION_STRING} --file-version=${VERSION_STRING}
+	CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build -o $@ -ldflags "-X main.version=${VERSION_STRING}" ./cmd/kutti/
 
 .PHONY: windows
 windows: out/kutti_windows_amd64.exe
@@ -41,11 +34,11 @@ all: linux windows
 
 .PHONY: resourceclean
 resourceclean: cmd/kutti/*.syso
-	$(DEL) cmd/kutti/*.syso
+	rm cmd/kutti/*.syso
 
 .PHONY: binclean
 binclean: out/*
-	$(DEL) out/
+	rm -r out/
 
 .PHONY: clean
 clean: binclean resourceclean
