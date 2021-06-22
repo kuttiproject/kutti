@@ -23,6 +23,12 @@ out/kutti_windows_amd64.exe: $(KUTTICMDFILES) cmd/kutti/winres/*
 	go-winres make --in=cmd/kutti/winres/winres.json --out=cmd/kutti/rsrc --arch=amd64 --product-version=${VERSION_STRING} --file-version=${VERSION_STRING}
 	CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build -o $@ -ldflags "-X main.version=${VERSION_STRING}" ./cmd/kutti/
 
+out/kutti-windows-installer.exe: build/package/kutti-windows-installer/kutti-windows-installer.nsi out/kutti_windows_amd64.exe
+	makensis -NOCD -V3 -- $<
+
+.PHONY: windows-installer
+windows-installer: out/kutti-windows-installer.exe
+
 .PHONY: windows
 windows: out/kutti_windows_amd64.exe
 
