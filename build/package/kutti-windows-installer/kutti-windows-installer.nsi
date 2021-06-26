@@ -13,10 +13,15 @@ Section
     WriteUninstaller "$INSTDIR\uninstall.exe"
 
     # Files
-    File /oname=kutti.exe out/kutti_windows_amd64.exe 
+    File /oname=kutti.exe out/kutti_windows_amd64.exe
+    File /oname=kutti.ico cmd/kutti/winres/icon.ico
+
+    # Windows Terminal JSON Fragment
+    SetOutPath "$LOCALAPPDATA\Microsoft\Windows Terminal\Fragments\Kutti\"
+    File /oname=kutti.json build/package/kutti-windows-installer/kutti-wt-profile.json
 
     # Shortcuts
-    CreateShortcut "$SMPROGRAMS\Kutti Uninstall.lnk" "$INSTDIR\uninstall.exe"
+    CreateShortcut "$SMPROGRAMS\Uninstall Kutti.lnk" "$INSTDIR\uninstall.exe"
 
     # Set Output path before creating shortcuts, as that will be
     # the working directory for the shortcuts. 
@@ -35,6 +40,10 @@ Section "Uninstall"
 
     # Delete files
     Delete "$INSTDIR\kutti.exe"
+    Delete "$INSTDIR\kutti.ico"
+
+    # Remove Windows Terminal JSON Fragment
+    RMDir /r "$LOCALAPPDATA\Microsoft\Windows Terminal\Fragments\Kutti\"
 
     # Delete shortcuts
     Delete "$SMPROGRAMS\Uninstall Kutti.lnk"

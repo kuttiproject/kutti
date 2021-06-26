@@ -1,0 +1,16 @@
+{
+    "profiles": [
+        {
+            "name": "Kutti Command Prompt",
+            "commandline": "%windir%\\system32\\cmd.exe /K \"PATH=%PATH%;%LOCALAPPDATA%\\Programs\\kutti\"",
+            "icon": "%LOCALAPPDATA%\\Programs\\kutti\\kutti.ico",
+            "startingDirectory": "%USERPROFILE%"
+        },
+        {
+            "name": "Kutti PowerShell",
+            "commandline": "%SystemRoot%\\system32\\WindowsPowerShell\\v1.0\\powershell.exe -NoExit -c \"$env:Path += ';%LOCALAPPDATA%\\Programs\\kutti'\"",
+            "icon": "%LOCALAPPDATA%\\Programs\\kutti\\kutti.ico",
+            "startingDirectory": "%USERPROFILE%"
+        }
+    ]
+}
