@@ -29,7 +29,8 @@ func NameValidArgs(c *cobra.Command, args []string, toComplete string) ([]string
 // SetDriverFlag adds a "--driver" flag to a Cobra command,
 // and sets it up for autocompletion with driver names.
 func SetDriverFlag(c *cobra.Command) {
-	c.Flags().StringP("driver", "d", "", "driver name")
+	defaultdrivername, _ := cli.Default("driver")
+	c.Flags().StringP("driver", "d", defaultdrivername, "driver name")
 
 	c.RegisterFlagCompletionFunc(
 		"driver",

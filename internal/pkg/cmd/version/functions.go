@@ -194,3 +194,12 @@ func versionRmCommand(c *cobra.Command, args []string) error {
 
 	return nil
 }
+
+func versionUpdateCommand(c *cobra.Command, args []string) error {
+	driver, err := getDriver(c)
+	if err != nil {
+		return err
+	}
+
+	return driver.UpdateVersionList()
+}
