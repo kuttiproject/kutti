@@ -1,6 +1,6 @@
 package main
 
-// On Windows, we will includer the following drivers:
+// On Windows, we will include the following drivers:
 //	- vbox
 
 import (

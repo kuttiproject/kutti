@@ -1,6 +1,6 @@
 package main
 
-// On Linux, we will include the following drivers:
+// On OS X, we will include the following drivers:
 //	- vbox
 
 import (
