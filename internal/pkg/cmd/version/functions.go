@@ -50,10 +50,32 @@ func versionlsCommand(c *cobra.Command, args []string) error {
 	quiet, _ := c.Root().PersistentFlags().GetBool("quiet")
 	if quiet {
 		versionnames := driver.VersionNames()
+
+		// If no versions available, try to update list
+		if len(versionnames) == 0 {
+			err := driver.UpdateVersionList()
+			if err != nil {
+				return err
+			}
+
+			versionnames = driver.VersionNames()
+		}
+
 		for _, versionname := range versionnames {
 			fmt.Println(versionname)
 		}
 		return nil
+	}
+
+	driverversions := driver.Versions()
+	// If no versions available, try to update list
+	if len(driverversions) == 0 {
+		err := driver.UpdateVersionList()
+		if err != nil {
+			return err
+		}
+
+		driverversions = driver.Versions()
 	}
 
 	defaultversion, _ := cli.Default("version")
@@ -66,7 +88,7 @@ func versionlsCommand(c *cobra.Command, args []string) error {
 		defaultversion,
 	)
 
-	versionlsFormatter.Render(os.Stdout, driver.Versions())
+	versionlsFormatter.Render(os.Stdout, driverversions)
 
 	return nil
 }
