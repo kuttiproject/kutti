@@ -213,6 +213,13 @@ func nodeStartCommand(c *cobra.Command, args []string) error {
 		return err
 	}
 
+	if len(args) == 0 {
+		return cli.WrapErrorMessage(
+			1,
+			"at least one node name expected",
+		)
+	}
+
 	if len(args) == 1 {
 		return clustercmd.StartNode(cluster, args[0])
 	}
@@ -233,6 +240,13 @@ func nodeStopCommand(c *cobra.Command, args []string) error {
 	cluster, err := getCluster(c)
 	if err != nil {
 		return err
+	}
+
+	if len(args) == 0 {
+		return cli.WrapErrorMessage(
+			1,
+			"at least one node name expected",
+		)
 	}
 
 	if len(args) == 1 {
