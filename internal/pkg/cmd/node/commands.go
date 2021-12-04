@@ -74,7 +74,11 @@ var nodeCmd = &cli.Command{
 				RunE:              nodeStartCommand,
 				SilenceErrors:     true,
 			},
-			SetFlagsFunc: SetClusterFlag,
+			SetFlagsFunc: func(c *cobra.Command) {
+				SetClusterFlag(c)
+
+				c.Flags().BoolP("force", "f", false, "forcibly start node (emergency use only)")
+			},
 		},
 		{
 			Cmd: &cobra.Command{
@@ -85,8 +89,23 @@ var nodeCmd = &cli.Command{
 				RunE:              nodeStopCommand,
 				SilenceErrors:     true,
 			},
-			SetFlagsFunc: SetClusterFlag,
+			SetFlagsFunc: func(c *cobra.Command) {
+				SetClusterFlag(c)
+
+				c.Flags().BoolP("force", "f", false, "forcibly stop node (emergency use only)")
+			},
 		},
+		// {
+		// 	Cmd: &cobra.Command{
+		// 		Use:               "recover NODENAME",
+		// 		Short:             "Try to recover an unresponsive node",
+		// 		Args:              cobra.ExactValidArgs(1),
+		// 		ValidArgsFunction: NameValidArgs,
+		// 		RunE:              nodeRecoverCommand,
+		// 		SilenceErrors:     true,
+		// 	},
+		// 	SetFlagsFunc: SetClusterFlag,
+		// },
 		{
 			Cmd: &cobra.Command{
 				Use:               "publish NODENAME",

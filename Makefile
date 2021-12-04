@@ -1,14 +1,15 @@
 # Maintain semantic version
 VERSION_MAJOR ?= 0
 VERSION_MINOR ?= 2
-BUILD_NUMBER  ?= 3
-PATCH_NUMBER  ?= 
+BUILD_NUMBER  ?= 4
+PATCH_NUMBER  ?= -alpha1
 VERSION_STRING = $(VERSION_MAJOR).$(VERSION_MINOR).$(BUILD_NUMBER)$(PATCH_NUMBER)
 
 KUTTICMDFILES = cmd/kutti/*.go          \
 				internal/pkg/cli/*.go   \
 				internal/pkg/cmd/*.go   \
 				internal/pkg/cmd/*/*.go \
+				internal/pkg/sshclient/*.go \
 				go.mod \
 				Makefile
 

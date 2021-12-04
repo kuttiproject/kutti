@@ -108,8 +108,8 @@ github.com/kuttiproject/driver-vbox v0.2.1 h1:daC5F8dQEd3f1sxAThIwVZuTTtStWfTrOM
 github.com/kuttiproject/driver-vbox v0.2.1/go.mod h1:Qx1UUIEaT/GpZ2XYIuEKNCWwWCyTB3BlkTHrZRL0OFk=
 github.com/kuttiproject/drivercore v0.1.2 h1:t/AKAh48130SgOGi2kNmuoi3KkaIpHZx+vL6tqKsPGY=
 github.com/kuttiproject/drivercore v0.1.2/go.mod h1:1C1TMGfQ4u/5ltHUtl4hL7gYzXZyZQVhkOha4GuOzk0=
-github.com/kuttiproject/kuttilib v0.2.0 h1:csbVAMZjLjTx6viMO/gVJFfzfJnRL78UH5XTHFLvbs4=
-github.com/kuttiproject/kuttilib v0.2.0/go.mod h1:naguNcnr0FjTVm+Hzxb+LlXQHrDGuFN3igO9fF1AvbI=
+github.com/kuttiproject/kuttilib v0.3.0 h1:PlSdyQVrV50wQNIKnf+qK/5N+ckmVjVEDo2GZK9R9Pc=
+github.com/kuttiproject/kuttilib v0.3.0/go.mod h1:naguNcnr0FjTVm+Hzxb+LlXQHrDGuFN3igO9fF1AvbI=
 github.com/kuttiproject/kuttilog v0.1.2 h1:VEqVWrR3M6RME6aoUuVwXNO3bRpHKNp0ISAP/vqncpg=
 github.com/kuttiproject/kuttilog v0.1.2/go.mod h1:OO3dHpXm1/Pjlc57R4c0e/C+ZWkYlY3Fd9Ikn8xPXi4=
 github.com/kuttiproject/workspace v0.2.2 h1:1eNdMooB6Oq7jq2wodbuaY+IVZSYcEuXnqY3e00s64Y=

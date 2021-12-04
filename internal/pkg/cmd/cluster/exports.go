@@ -22,7 +22,7 @@ func NameValidArgs(c *cobra.Command, args []string, toComplete string) ([]string
 }
 
 // StartNode starts a node.
-func StartNode(cluster *kuttilib.Cluster, nodename string) error {
+func StartNode(cluster *kuttilib.Cluster, nodename string, force bool) error {
 	node, ok := cluster.GetNode(nodename)
 	if !ok {
 		return cli.WrapErrorMessagef(
@@ -33,7 +33,8 @@ func StartNode(cluster *kuttilib.Cluster, nodename string) error {
 	}
 
 	nodestatus := node.Status()
-	if nodestatus == kuttilib.NodeStatusRunning {
+
+	if nodestatus == kuttilib.NodeStatusRunning && (!force) {
 		return cli.WrapErrorMessagef(
 			1,
 			"node '%v' already started",
@@ -52,7 +53,12 @@ func StartNode(cluster *kuttilib.Cluster, nodename string) error {
 	}
 
 	kuttilog.Printf(kuttilog.Info, "Starting node %v...", nodename)
-	err := node.Start()
+	var err error
+	if force {
+		err = node.ForceStart()
+	} else {
+		err = node.Start()
+	}
 	if err != nil {
 		kuttilog.Printf(
 			kuttilog.Info,
@@ -72,7 +78,7 @@ func StartNode(cluster *kuttilib.Cluster, nodename string) error {
 }
 
 // StopNode stops a node.
-func StopNode(cluster *kuttilib.Cluster, nodename string) error {
+func StopNode(cluster *kuttilib.Cluster, nodename string, force bool) error {
 	node, ok := cluster.GetNode(nodename)
 	if !ok {
 		return cli.WrapErrorMessagef(
@@ -83,7 +89,8 @@ func StopNode(cluster *kuttilib.Cluster, nodename string) error {
 	}
 
 	nodestatus := node.Status()
-	if nodestatus == kuttilib.NodeStatusStopped {
+
+	if nodestatus == kuttilib.NodeStatusStopped && (!force) {
 		return cli.WrapErrorMessagef(
 			1,
 			"node '%v' already stopped",
@@ -101,8 +108,13 @@ func StopNode(cluster *kuttilib.Cluster, nodename string) error {
 		)
 	}
 
+	var err error
 	kuttilog.Printf(kuttilog.Info, "Stopping node %v...", nodename)
-	err := node.Stop()
+	if force {
+		err = node.ForceStop()
+	} else {
+		err = node.Stop()
+	}
 	if err != nil {
 		return cli.WrapErrorMessagef(
 			1,

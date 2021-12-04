@@ -231,7 +231,7 @@ func clusterUpCommand(c *cobra.Command, args []string) error {
 	}
 
 	for _, nodename := range cluster.NodeNames() {
-		StartNode(cluster, nodename)
+		StartNode(cluster, nodename, false)
 	}
 
 	return nil
@@ -255,7 +255,7 @@ func clusterDownCommand(c *cobra.Command, args []string) error {
 	}
 
 	for _, nodename := range cluster.NodeNames() {
-		StopNode(cluster, nodename)
+		StopNode(cluster, nodename, false)
 	}
 
 	return nil

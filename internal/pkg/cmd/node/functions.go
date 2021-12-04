@@ -220,12 +220,13 @@ func nodeStartCommand(c *cobra.Command, args []string) error {
 		)
 	}
 
+	forceflag, _ := c.Flags().GetBool("force")
 	if len(args) == 1 {
-		return clustercmd.StartNode(cluster, args[0])
+		return clustercmd.StartNode(cluster, args[0], forceflag)
 	}
 
 	for _, nodename := range args {
-		err = clustercmd.StartNode(cluster, nodename)
+		err = clustercmd.StartNode(cluster, nodename, forceflag)
 		if err != nil {
 			kuttilog.Printf(kuttilog.Info, "Warning: %v.", err)
 		}
@@ -249,12 +250,13 @@ func nodeStopCommand(c *cobra.Command, args []string) error {
 		)
 	}
 
+	forceflag, _ := c.Flags().GetBool("force")
 	if len(args) == 1 {
-		return clustercmd.StopNode(cluster, args[0])
+		return clustercmd.StopNode(cluster, args[0], forceflag)
 	}
 
 	for _, nodename := range args {
-		err = clustercmd.StopNode(cluster, nodename)
+		err = clustercmd.StopNode(cluster, nodename, forceflag)
 		if err != nil {
 			kuttilog.Printf(kuttilog.Info, "Warning: %v.", err)
 		}
@@ -262,6 +264,74 @@ func nodeStopCommand(c *cobra.Command, args []string) error {
 
 	return nil
 }
+
+// Triaged to a future release
+// func nodeRecoverCommand(c *cobra.Command, args []string) error {
+// 	c.SilenceUsage = true
+
+// 	cluster, err := getCluster(c)
+// 	if err != nil {
+// 		return err
+// 	}
+
+// 	node, ok := cluster.GetNode(args[0])
+// 	if !ok {
+// 		return cli.WrapErrorMessagef(
+// 			2,
+// 			"node %v not found",
+// 			args[0],
+// 		)
+// 	}
+
+// 	// First, capture the status
+// 	status := node.Status()
+
+// 	// Then try to force start the node
+// 	err = node.ForceStart()
+
+// 	// If that works, stop
+// 	if err == nil {
+// 		// TODO: Message here
+// 		return nil
+// 	}
+// 	// Then try to force stop the node
+// 	err = node.ForceStop()
+
+// 	// If that does not work, stop with error
+// 	if err != nil {
+// 		// TODO: Better error message here
+// 		return cli.WrapError(1, err)
+// 	}
+
+// 	// If captured status was stopped, stop
+// 	if status == kuttilib.NodeStatusStopped {
+// 		// TODO: Message here
+// 		return nil
+// 	}
+// 	// Try to normal start the node
+// 	err = node.Start()
+
+// 	// If that works, stop
+// 	if err == nil {
+// 		// TODO: Message here
+// 		return nil
+// 	}
+// 	// Try to force start the node
+// 	err = node.ForceStart()
+
+// 	// If that works, stop
+// 	if err == nil {
+// 		// TODO: Message here
+// 		return nil
+// 	}
+
+// 	// Stop with error
+// 	return cli.WrapErrorMessagef(
+// 		1,
+// 		"could not recover node. You may have to delete and recreate it. The last error returned was: %v",
+// 		err,
+// 	)
+// }
 
 func nodePublishCommand(c *cobra.Command, args []string) error {
 	c.SilenceUsage = true
@@ -392,7 +462,7 @@ func nodeSSHCommand(c *cobra.Command, args []string) error {
 	if !cluster.Driver().UsesNATNetworking() {
 		return cli.WrapErrorMessage(
 			1,
-			"the SSH command currently on works on clusters that use NAT networking",
+			"the SSH command currently only works on clusters that use NAT networking",
 		)
 	}
 
