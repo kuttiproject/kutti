@@ -142,6 +142,25 @@ func (sc *SSHClient) runclient(ctx context.Context, address string) error {
 	return nil
 }
 
+// CopyTo copies a local file or directory to the specified
+// address.
+func (sc *SSHClient) CopyTo(address string, localPath string, remotePath string, recurseDir bool) error {
+	if recurseDir {
+		return copyDirectoryToRemote(sc.config, address, localPath, remotePath)
+	}
+
+	return copyFileToRemote(sc.config, address, localPath, remotePath)
+}
+
+// CopyFrom copies a file or directory from the specified address.
+func (sc *SSHClient) CopyFrom(address string, remotePath string, localPath string, recurseDir bool) error {
+	if recurseDir {
+		return copyDirectoryFromRemote(sc.config, address, remotePath, localPath)
+	}
+
+	return copyFileFromRemote(sc.config, address, remotePath, localPath)
+}
+
 // NewWithPassword creates a new SSH client with password authentication, and no host key check
 func NewWithPassword(username string, password string) *SSHClient {
 	return &SSHClient{

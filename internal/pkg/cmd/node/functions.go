@@ -3,6 +3,7 @@ package node
 import (
 	"fmt"
 	"os"
+	"regexp"
 
 	"github.com/kuttiproject/kuttilog"
 
@@ -451,6 +452,36 @@ func nodeUnpublishCommand(c *cobra.Command, args []string) error {
 	return nil
 }
 
+func getNodeSSHPort(cluster *kuttilib.Cluster, nodename string) (int, error) {
+	node, ok := cluster.GetNode(nodename)
+	if !ok {
+		return 0, cli.WrapErrorMessagef(
+			2,
+			"node '%v' not found",
+			nodename,
+		)
+	}
+
+	if node.Status() != "Running" {
+		return 0, cli.WrapErrorMessagef(
+			1,
+			"node '%v' is not running",
+			nodename,
+		)
+	}
+
+	sshport, ok := node.Ports()[22]
+	if !ok {
+		return 0, cli.WrapErrorMessagef(
+			1,
+			"the SSH port of node '%s' has not been forwarded",
+			nodename,
+		)
+	}
+
+	return sshport, nil
+}
+
 func nodeSSHCommand(c *cobra.Command, args []string) error {
 	c.SilenceUsage = true
 
@@ -467,30 +498,9 @@ func nodeSSHCommand(c *cobra.Command, args []string) error {
 	}
 
 	nodename := args[0]
-	node, ok := cluster.GetNode(nodename)
-	if !ok {
-		return cli.WrapErrorMessagef(
-			2,
-			"node '%v' not found",
-			nodename,
-		)
-	}
-
-	if node.Status() != "Running" {
-		return cli.WrapErrorMessagef(
-			1,
-			"node '%v' is not running",
-			nodename,
-		)
-	}
-
-	sshport, ok := node.Ports()[22]
-	if !ok {
-		return cli.WrapErrorMessagef(
-			1,
-			"the SSH port of node '%s' has not been forwarded",
-			nodename,
-		)
+	sshport, err := getNodeSSHPort(cluster, nodename)
+	if err != nil {
+		return err
 	}
 
 	username, _ := c.Flags().GetString("username")
@@ -508,6 +518,197 @@ func nodeSSHCommand(c *cobra.Command, args []string) error {
 	client := sshclient.NewWithPassword(username, password)
 
 	client.RunInterativeShell(address)
+
+	return nil
+}
+
+type cparg struct {
+	nodename         string
+	filepath         string
+	hasnodename      bool
+	localfileexists  bool
+	localisdirectory bool
+}
+
+func parseCPArg(arg string) (*cparg, error) {
+	// Look for a nodename followed by a colon followed by a path.
+	// If there is such a thing, the nodename plus the colon will
+	// be submatch[1], submatch[2] will be just the nodename, and
+	// submatch[3] will be the path.
+	// The nodename followed by a colon may not appear at all, in
+	// which submatch[1] and [2] will be empty, and submatch[3]
+	// will be just the path.
+	cpargregex, _ := regexp.Compile("^(([a-z][a-z0-9]{0,9}):){0,1}([^:]*)$")
+	results := cpargregex.FindStringSubmatch(arg)
+
+	// If no match, argument is invalid
+	if len(results) < 4 {
+		return nil, cli.WrapErrorMessagef(
+			1,
+			"could not understand '%v'",
+			arg,
+		)
+	}
+
+	result := &cparg{}
+
+	// If match, and second submatch is empty,
+	// the argment is just a file path
+	if results[2] == "" {
+		result.filepath = results[3]
+	} else {
+		// Second submatch is node name, third
+		// submatch is file path.
+		result.nodename = results[2]
+		result.filepath = results[3]
+		result.hasnodename = true
+	}
+
+	// Do a standard OS check on the path
+	// It may exist on the host
+	fi, err := os.Stat(result.filepath)
+	if err == nil {
+		result.localfileexists = true
+		result.localisdirectory = fi.IsDir()
+		return result, nil
+	}
+
+	// If the error is IsNotExist, and not
+	// anything else, file path seems to be
+	// valid.
+	if os.IsNotExist(err) {
+		return result, nil
+	}
+
+	// Otherwise, file path is invalid
+	return nil, cli.WrapError(
+		1,
+		err,
+	)
+}
+
+func nodeSCPCommand(c *cobra.Command, args []string) error {
+	c.SilenceUsage = true
+
+	cluster, err := getCluster(c)
+	if err != nil {
+		return err
+	}
+
+	if !cluster.Driver().UsesNATNetworking() {
+		return cli.WrapErrorMessage(
+			1,
+			"the scp command currently only works on clusters that use NAT networking",
+		)
+	}
+
+	// Parse the arguments
+	arg1, err := parseCPArg(args[0])
+	if err != nil {
+		return err
+	}
+
+	arg2, err := parseCPArg(args[1])
+	if err != nil {
+		return err
+	}
+
+	// If neither the first argument, nor the second
+	// have a nodename, the user should be using the
+	// cp or copy command instead.
+	if !(arg1.hasnodename || arg2.hasnodename) {
+		return cli.WrapErrorMessage(
+			1,
+			"must specify at least one node",
+		)
+
+	}
+
+	// If both arguments have a nodename, it is an
+	// error.
+	if arg1.hasnodename && arg2.hasnodename {
+		return cli.WrapErrorMessage(
+			1,
+			"copying between nodes is not supported",
+		)
+	}
+
+	// If the first (source) argument does not have
+	// a nodename, then the file or directory
+	// specified must exist on the host.
+	if (!arg1.hasnodename) && (!arg1.localfileexists) {
+		return cli.WrapErrorMessagef(
+			2,
+			"'%v': no such file or directory",
+			arg1.filepath,
+		)
+	}
+
+	// If the second (destination) argument has a
+	// nodename but not a path, we should assume
+	// the current directoy on the node.
+	if arg2.hasnodename && arg2.filepath == "" {
+		arg2.filepath = "."
+	}
+
+	recurseFlag, _ := c.Flags().GetBool("recurse")
+
+	// If the first (source) argument does not have
+	// a nodename, and is a directory, the --recurse
+	// flag should be specified.
+	if (!arg1.hasnodename) &&
+		arg1.localisdirectory &&
+		(!recurseFlag) {
+
+		return cli.WrapErrorMessagef(
+			1,
+			"'%v' is a directory. Use the --recurse option.",
+			arg1.filepath,
+		)
+	}
+
+	username, _ := c.Flags().GetString("username")
+	if username == "" {
+		username = "user1"
+	}
+
+	password, _ := c.Flags().GetString("password")
+	if username == "" {
+		password = "Pass@word1"
+	}
+
+	// If the first (source) argument has a nodename, this is a
+	// copy from node operation.
+	if arg1.hasnodename {
+		sshport, err := getNodeSSHPort(cluster, arg1.nodename)
+		if err != nil {
+			return err
+		}
+
+		kuttilog.Printf(kuttilog.Info, "Copying from node %s...", arg1.nodename)
+		address := fmt.Sprintf("localhost:%v", sshport)
+		client := sshclient.NewWithPassword(username, password)
+
+		err = client.CopyFrom(address, arg1.filepath, arg2.filepath, recurseFlag)
+
+		if err != nil {
+			return err
+		}
+	} else {
+		sshport, err := getNodeSSHPort(cluster, arg2.nodename)
+		if err != nil {
+			return err
+		}
+
+		kuttilog.Printf(kuttilog.Info, "Copying to node %s...", arg2.nodename)
+		address := fmt.Sprintf("localhost:%v", sshport)
+		client := sshclient.NewWithPassword(username, password)
+
+		err = client.CopyTo(address, arg1.filepath, arg2.filepath, recurseFlag)
+		if err != nil {
+			return err
+		}
+	}
 
 	return nil
 }

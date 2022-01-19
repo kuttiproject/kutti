@@ -154,7 +154,36 @@ var nodeCmd = &cli.Command{
 				SetClusterFlag(c)
 
 				c.Flags().StringP("username", "u", "user1", "username for SSH connection")
-				c.Flags().StringP("password", "p", "Pass@word1", "username for SSH connection")
+				c.Flags().StringP("password", "p", "Pass@word1", "password for SSH connection")
+			},
+		},
+		{
+			Cmd: &cobra.Command{
+				Use:   "scp SOURCE TARGET",
+				Short: "Copy a file to or from the node",
+				Long: `
+Copy a file to or from the node.
+			
+Either the source or the target must begin with a nodename followed by a colon.
+
+Examples:
+	kutti node scp /some/file/on/host node1:/some/file
+    kutti node scp node1:/some/file /some/file/on/host
+	
+	kutti node scp -r /some/directory/on/host node1:/some/directory
+	kutti node scp -r node1:/some/directory /some/directory/on/host
+ 
+`,
+				Args:          cobra.ExactArgs(2),
+				RunE:          nodeSCPCommand,
+				SilenceErrors: true,
+			},
+			SetFlagsFunc: func(c *cobra.Command) {
+				SetClusterFlag(c)
+
+				c.Flags().BoolP("recurse", "r", false, "copy directories, recursively")
+				c.Flags().StringP("username", "u", "user1", "username for SSH connection")
+				c.Flags().StringP("password", "p", "Pass@word1", "password for SSH connection")
 			},
 		},
 	},
