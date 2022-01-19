@@ -523,26 +523,31 @@ func nodeSSHCommand(c *cobra.Command, args []string) error {
 }
 
 type cparg struct {
-	nodename         string
-	filepath         string
-	hasnodename      bool
-	localfileexists  bool
-	localisdirectory bool
+	nodename          string
+	filepath          string
+	hasnodename       bool
+	iswindowsfilepath bool
+	localfileexists   bool
+	localisdirectory  bool
 }
 
 func parseCPArg(arg string) (*cparg, error) {
-	// Look for a nodename followed by a colon followed by a path.
-	// If there is such a thing, the nodename plus the colon will
+	// Look for a nodename followed by a colon followed by a path,
+	// or a drive letter followed by a path.
+	// If it is a nodename, the nodename plus the colon will
 	// be submatch[1], submatch[2] will be just the nodename, and
-	// submatch[3] will be the path.
+	// submatch[5] will be the path.
+	// If it is a drive letter, the letter plus the colon will
+	// be submatch[1], submatch[2] will be just the letter, and
+	// submatch[5] will be the path.
 	// The nodename followed by a colon may not appear at all, in
-	// which submatch[1] and [2] will be empty, and submatch[3]
-	// will be just the path.
-	cpargregex, _ := regexp.Compile("^(([a-z][a-z0-9]{0,9}):){0,1}([^:]*)$")
+	// which case submatch[1] and [2] will be empty, and
+	// submatch[5] will be just the path.
+	cpargregex, _ := regexp.Compile("^((([A-Z])|([a-z][a-z0-9]{0,9})):){0,1}([^:]*)$")
 	results := cpargregex.FindStringSubmatch(arg)
 
 	// If no match, argument is invalid
-	if len(results) < 4 {
+	if len(results) < 6 {
 		return nil, cli.WrapErrorMessagef(
 			1,
 			"could not understand '%v'",
@@ -555,13 +560,21 @@ func parseCPArg(arg string) (*cparg, error) {
 	// If match, and second submatch is empty,
 	// the argment is just a file path
 	if results[2] == "" {
-		result.filepath = results[3]
+		result.filepath = results[5]
 	} else {
-		// Second submatch is node name, third
-		// submatch is file path.
-		result.nodename = results[2]
-		result.filepath = results[3]
-		result.hasnodename = true
+		if len(results[2]) == 1 {
+			// First submatch is a drive letter plus colon,
+			// fifth submatch has a path
+			result.filepath = results[1] + results[5]
+			result.iswindowsfilepath = true
+		} else {
+
+			// Second submatch is node name, fifth
+			// submatch is file path.
+			result.nodename = results[2]
+			result.filepath = results[5]
+			result.hasnodename = true
+		}
 	}
 
 	// Do a standard OS check on the path
