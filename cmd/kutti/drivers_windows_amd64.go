@@ -4,6 +4,7 @@ package main
 //	- vbox
 
 import (
+	_ "github.com/kuttiproject/driver-hyperv"
 	_ "github.com/kuttiproject/driver-vbox"
 	"github.com/kuttiproject/kutti/internal/pkg/cli"
 )

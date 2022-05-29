@@ -19,3 +19,6 @@ out/
 
 # Generated resource files
 *.syso
+
+# Editor settings
+.vscode/

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"regexp"
+	"time"
 
 	"github.com/kuttiproject/kuttilog"
 
@@ -11,7 +12,7 @@ import (
 
 	"github.com/kuttiproject/kutti/internal/pkg/cli"
 	clustercmd "github.com/kuttiproject/kutti/internal/pkg/cmd/cluster"
-	"github.com/kuttiproject/kutti/internal/pkg/sshclient"
+	"github.com/kuttiproject/sshclient"
 
 	"github.com/spf13/cobra"
 )
@@ -63,6 +64,7 @@ func nodeLsCommand(c *cobra.Command, args []string) error {
 		"nodels",
 		[]*cli.TableColumn{
 			{Name: "Name", Width: 15, DefaultCheck: true},
+			//{Name: "IPAddress", Title: "IP Address", Width: 12},
 			{Name: "Status", Width: 15},
 			{Name: "CreatedAt", Title: "Created", Width: 15, FormatPrefix: "prettytime"},
 		},
@@ -94,7 +96,28 @@ func nodeShowCommand(c *cobra.Command, args []string) error {
 	}
 
 	renderer := cli.NewJSONRenderer(2)
-	renderer.Render(os.Stdout, node)
+	if node.Status() == kuttilib.NodeStatusRunning {
+		viewdata := struct {
+			ClusterName string
+			Name        string
+			CreatedAt   time.Time
+			Type        string
+			Ports       map[int]int
+			IPAddress   string
+			SSHAddress  string
+		}{
+			ClusterName: node.Cluster().Name(),
+			Name:        node.Name(),
+			CreatedAt:   node.CreatedAt(),
+			Type:        node.Type(),
+			Ports:       node.Ports(),
+			IPAddress:   node.IPAddress(),
+			SSHAddress:  node.SSHAddress(),
+		}
+		renderer.Render(os.Stdout, viewdata)
+	} else {
+		renderer.Render(os.Stdout, node)
+	}
 
 	return nil
 }
@@ -452,36 +475,6 @@ func nodeUnpublishCommand(c *cobra.Command, args []string) error {
 	return nil
 }
 
-func getNodeSSHPort(cluster *kuttilib.Cluster, nodename string) (int, error) {
-	node, ok := cluster.GetNode(nodename)
-	if !ok {
-		return 0, cli.WrapErrorMessagef(
-			2,
-			"node '%v' not found",
-			nodename,
-		)
-	}
-
-	if node.Status() != "Running" {
-		return 0, cli.WrapErrorMessagef(
-			1,
-			"node '%v' is not running",
-			nodename,
-		)
-	}
-
-	sshport, ok := node.Ports()[22]
-	if !ok {
-		return 0, cli.WrapErrorMessagef(
-			1,
-			"the SSH port of node '%s' has not been forwarded",
-			nodename,
-		)
-	}
-
-	return sshport, nil
-}
-
 func nodeSSHCommand(c *cobra.Command, args []string) error {
 	c.SilenceUsage = true
 
@@ -490,17 +483,30 @@ func nodeSSHCommand(c *cobra.Command, args []string) error {
 		return err
 	}
 
-	if !cluster.Driver().UsesNATNetworking() {
-		return cli.WrapErrorMessage(
-			1,
-			"the SSH command currently only works on clusters that use NAT networking",
+	nodename := args[0]
+	node, ok := cluster.GetNode(nodename)
+	if !ok {
+		return cli.WrapErrorMessagef(
+			2,
+			"node '%v' not found",
+			nodename,
 		)
 	}
 
-	nodename := args[0]
-	sshport, err := getNodeSSHPort(cluster, nodename)
-	if err != nil {
-		return err
+	if node.Status() != "Running" {
+		return cli.WrapErrorMessagef(
+			1,
+			"node '%v' is not running",
+			nodename,
+		)
+	}
+	address := node.SSHAddress()
+	if address == "" {
+		return cli.WrapErrorMessagef(
+			1,
+			"could not fetch SSH address for node '%v'",
+			nodename,
+		)
 	}
 
 	username, _ := c.Flags().GetString("username")
@@ -509,12 +515,12 @@ func nodeSSHCommand(c *cobra.Command, args []string) error {
 	}
 
 	password, _ := c.Flags().GetString("password")
-	if username == "" {
+	if password == "" {
 		password = "Pass@word1"
 	}
 
 	kuttilog.Printf(kuttilog.Info, "Connecting to node %s...", nodename)
-	address := fmt.Sprintf("localhost:%v", sshport)
+
 	client := sshclient.NewWithPassword(username, password)
 
 	client.RunInterativeShell(address)
@@ -600,19 +606,43 @@ func parseCPArg(arg string) (*cparg, error) {
 	)
 }
 
+func getNodeSSHAddress(cluster *kuttilib.Cluster, nodename string) (string, error) {
+	node, ok := cluster.GetNode(nodename)
+	if !ok {
+		return "", cli.WrapErrorMessagef(
+			2,
+			"node '%v' not found",
+			nodename,
+		)
+
+	}
+
+	if node.Status() != "Running" {
+		return "", cli.WrapErrorMessagef(
+			1,
+			"node '%v' is not running",
+			nodename,
+		)
+	}
+
+	address := node.SSHAddress()
+	if address == "" {
+		return "", cli.WrapErrorMessagef(
+			1,
+			"could not fetch SSH address for node '%v'",
+			nodename,
+		)
+	}
+
+	return address, nil
+}
+
 func nodeSCPCommand(c *cobra.Command, args []string) error {
 	c.SilenceUsage = true
 
 	cluster, err := getCluster(c)
 	if err != nil {
 		return err
-	}
-
-	if !cluster.Driver().UsesNATNetworking() {
-		return cli.WrapErrorMessage(
-			1,
-			"the scp command currently only works on clusters that use NAT networking",
-		)
 	}
 
 	// Parse the arguments
@@ -686,20 +716,21 @@ func nodeSCPCommand(c *cobra.Command, args []string) error {
 	}
 
 	password, _ := c.Flags().GetString("password")
-	if username == "" {
+	if password == "" {
 		password = "Pass@word1"
 	}
 
 	// If the first (source) argument has a nodename, this is a
 	// copy from node operation.
 	if arg1.hasnodename {
-		sshport, err := getNodeSSHPort(cluster, arg1.nodename)
+
+		address, err := getNodeSSHAddress(cluster, arg1.nodename)
 		if err != nil {
 			return err
 		}
 
 		kuttilog.Printf(kuttilog.Info, "Copying from node %s...", arg1.nodename)
-		address := fmt.Sprintf("localhost:%v", sshport)
+
 		client := sshclient.NewWithPassword(username, password)
 
 		err = client.CopyFrom(address, arg1.filepath, arg2.filepath, recurseFlag)
@@ -708,13 +739,13 @@ func nodeSCPCommand(c *cobra.Command, args []string) error {
 			return err
 		}
 	} else {
-		sshport, err := getNodeSSHPort(cluster, arg2.nodename)
+		address, err := getNodeSSHAddress(cluster, arg2.nodename)
 		if err != nil {
 			return err
 		}
 
 		kuttilog.Printf(kuttilog.Info, "Copying to node %s...", arg2.nodename)
-		address := fmt.Sprintf("localhost:%v", sshport)
+
 		client := sshclient.NewWithPassword(username, password)
 
 		err = client.CopyTo(address, arg1.filepath, arg2.filepath, recurseFlag)
