@@ -110,6 +110,8 @@ github.com/kuttiproject/driver-vbox v0.2.1 h1:daC5F8dQEd3f1sxAThIwVZuTTtStWfTrOM
 github.com/kuttiproject/driver-vbox v0.2.1/go.mod h1:Qx1UUIEaT/GpZ2XYIuEKNCWwWCyTB3BlkTHrZRL0OFk=
 github.com/kuttiproject/driver-vbox v0.3.0 h1:5IdIRLkjJAnCStR5aor0qn/mdIE8P/vpgVyxgs69PCY=
 github.com/kuttiproject/driver-vbox v0.3.0/go.mod h1:Pq+x/Q0+9i6mbuYIfICoyztrjzvC2Yh5qc6WTZqqzZk=
+github.com/kuttiproject/driver-vbox v0.3.1 h1:qguUMrz8IG9PNKlTRsqDHYyIGYtai9NatkFfQaQyZgA=
+github.com/kuttiproject/driver-vbox v0.3.1/go.mod h1:Pq+x/Q0+9i6mbuYIfICoyztrjzvC2Yh5qc6WTZqqzZk=
 github.com/kuttiproject/drivercore v0.1.2/go.mod h1:1C1TMGfQ4u/5ltHUtl4hL7gYzXZyZQVhkOha4GuOzk0=
 github.com/kuttiproject/drivercore v0.2.0 h1:RZI/azMsyI8gPidXzHPcZXqajHPdq+zaRg3W4x9ASC0=
 github.com/kuttiproject/drivercore v0.2.0/go.mod h1:1C1TMGfQ4u/5ltHUtl4hL7gYzXZyZQVhkOha4GuOzk0=
