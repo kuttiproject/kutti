@@ -96,13 +96,15 @@ func nodeShowCommand(c *cobra.Command, args []string) error {
 	}
 
 	renderer := cli.NewJSONRenderer(2)
-	if node.Status() == kuttilib.NodeStatusRunning {
+	nodestatus := node.Status()
+	if nodestatus == kuttilib.NodeStatusRunning {
 		viewdata := struct {
 			ClusterName string
 			Name        string
 			CreatedAt   time.Time
 			Type        string
 			Ports       map[int]int
+			Status      string
 			IPAddress   string
 			SSHAddress  string
 		}{
@@ -111,12 +113,28 @@ func nodeShowCommand(c *cobra.Command, args []string) error {
 			CreatedAt:   node.CreatedAt(),
 			Type:        node.Type(),
 			Ports:       node.Ports(),
+			Status:      string(nodestatus),
 			IPAddress:   node.IPAddress(),
 			SSHAddress:  node.SSHAddress(),
 		}
 		renderer.Render(os.Stdout, viewdata)
 	} else {
-		renderer.Render(os.Stdout, node)
+		viewdata := struct {
+			ClusterName string
+			Name        string
+			CreatedAt   time.Time
+			Type        string
+			Ports       map[int]int
+			Status      string
+		}{
+			ClusterName: node.Cluster().Name(),
+			Name:        node.Name(),
+			CreatedAt:   node.CreatedAt(),
+			Type:        node.Type(),
+			Ports:       node.Ports(),
+			Status:      string(nodestatus),
+		}
+		renderer.Render(os.Stdout, viewdata)
 	}
 
 	return nil
