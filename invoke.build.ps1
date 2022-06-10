@@ -2,7 +2,7 @@ Param(
     $VersionMajor = (property VERSION_MAJOR "0"),
     $VersionMinor = (property VERSION_MINOR "3"),
     $BuildNumber  = (property BUILD_NUMBER "0"),
-    $PatchString  = (property PATCH_NUMBER  "-beta2")
+    $PatchString  = (property PATCH_NUMBER  "")
 )
 
 # Maintain semantic version in the parameters above
