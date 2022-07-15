@@ -35,7 +35,7 @@ func configGetCommand(c *cobra.Command, args []string) error {
 		)
 	}
 
-	kuttilog.Print(0, result)
+	kuttilog.Print(kuttilog.Quiet, result)
 	return nil
 }
 

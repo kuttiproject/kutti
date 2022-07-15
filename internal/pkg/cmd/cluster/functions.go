@@ -170,7 +170,7 @@ func clusterCreateCommand(c *cobra.Command, args []string) error {
 		)
 	}
 
-	kuttilog.Printf(2, "Creating cluster '%s'...\n", clustername)
+	kuttilog.Printf(kuttilog.Info, "Creating cluster '%s'...\n", clustername)
 
 	err = kuttilib.NewEmptyCluster(clustername, imagename, driver.Name())
 	if err != nil {

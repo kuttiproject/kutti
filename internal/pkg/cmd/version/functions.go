@@ -151,7 +151,24 @@ func versionPullCommand(c *cobra.Command, args []string) error {
 	filename, err := c.Flags().GetString("fromfile")
 	if err != nil || filename == "" {
 		kuttilog.Printf(kuttilog.Minimal, "Downloading image for Kubernetes version %s...", versionname)
-		err = version.Fetch()
+
+		if kuttilog.V(kuttilog.Info) {
+			fmt.Print("    Starting download...")
+			prevMib := int64(0)
+			err = version.FetchWithProgress(func(current int64, total int64) {
+				currentMib := current / 1048576
+				if (current < 1048576) || currentMib > prevMib {
+					fmt.Printf("\r    Downloaded %v/%v MiB", currentMib, total/1048576)
+					prevMib = currentMib
+				}
+				if current == total {
+					fmt.Println()
+				}
+			})
+		} else {
+			err = version.Fetch()
+		}
+
 		if err != nil {
 			return cli.WrapErrorMessagef(
 				1,
