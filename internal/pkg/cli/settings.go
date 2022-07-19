@@ -8,7 +8,7 @@ import (
 
 var (
 	data           *settingdata
-	settingmanager workspace.Configmanager
+	settingmanager workspace.ConfigManager
 )
 
 type settingdata struct {
@@ -29,7 +29,7 @@ func (dc *settingdata) Deserialize(data []byte) error {
 	return err
 }
 
-func (dc *settingdata) Setdefaults() {
+func (dc *settingdata) SetDefaults() {
 	dc.settings = map[string]string{}
 }
 
@@ -84,7 +84,7 @@ func init() {
 	}
 
 	var err error
-	settingmanager, err = workspace.NewFileConfigmanager("config", data)
+	settingmanager, err = workspace.NewFileConfigManager("config", data)
 
 	// If config manager cannot be initialized, big trouble.
 	if err != nil {

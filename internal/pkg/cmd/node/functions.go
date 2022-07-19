@@ -205,7 +205,7 @@ func nodeCreateCommand(cmd *cobra.Command, args []string) error {
 
 	// Check if sshport is occupied
 	if sshport != 0 {
-		err = cluster.CheckHostport(sshport)
+		err = cluster.CheckHostPort(sshport)
 		if err != nil {
 			return cli.WrapErrorMessagef(
 				1,
@@ -409,7 +409,7 @@ func nodePublishCommand(c *cobra.Command, args []string) error {
 		)
 	}
 
-	err = cluster.CheckHostport(hostport)
+	err = cluster.CheckHostPort(hostport)
 	if err != nil {
 		return cli.WrapErrorMessagef(
 			1,
@@ -541,7 +541,7 @@ func nodeSSHCommand(c *cobra.Command, args []string) error {
 
 	client := sshclient.NewWithPassword(username, password)
 
-	client.RunInterativeShell(address)
+	client.RunInteractiveShell(address)
 
 	return nil
 }
