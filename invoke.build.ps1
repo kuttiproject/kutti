@@ -1,7 +1,7 @@
 Param(
     $VersionMajor = (property VERSION_MAJOR "0"),
     $VersionMinor = (property VERSION_MINOR "3"),
-    $BuildNumber  = (property BUILD_NUMBER "2"),
+    $BuildNumber  = (property BUILD_NUMBER "1"),
     $PatchString  = (property PATCH_NUMBER  "")
 )
 
