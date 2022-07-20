@@ -2,7 +2,7 @@ Param(
     $VersionMajor = (property VERSION_MAJOR "0"),
     $VersionMinor = (property VERSION_MINOR "3"),
     $BuildNumber  = (property BUILD_NUMBER "2"),
-    $PatchString  = (property PATCH_NUMBER  "-beta1")
+    $PatchString  = (property PATCH_NUMBER  "")
 )
 
 # Maintain semantic version in the parameters above
@@ -90,13 +90,40 @@ task mac-install-script -Outputs out/get-kutti-darwin.sh -Inputs build/package/p
     }
 }
 
+# Synopsis: Build manpage docs output directory
+task manpagedocsoutputdir -Outputs out\man {
+    New-Item out\man -ItemType Directory -ErrorAction Ignore
+}
+
+# Synopsis: Build manpage docs
+task manpagedocs -Outputs out/man/kutti.1 -Inputs $($KuttiCmdFiles) manpagedocsoutputdir, {
+    exec {
+        go run internal/cmd/gendoc/main.go -o out/man -t manpages
+    }
+}
+
+# Synopsis: Build markdown docs output directory
+task markdowndocsoutputdir -Outputs out\markdown {
+    New-Item out\markdown -ItemType Directory -ErrorAction Ignore
+}
+
+# Synopsis: Build markdown docs
+task markdowndocs -Outputs out/markdown/kutti.md -Inputs $($KuttiCmdFiles) markdowndocsoutputdir, {
+    exec {
+        go run internal/cmd/gendoc/main.go -o out/markdown -t markdown
+    }
+}
+
 # Synopsis: Build all binaries
 task all linux, windows, mac
 
 # Synopsis: Build all installers
 task installers linux-install-script, windows-installer, mac-install-script
 
-# Synopsis: Clean build windows resource file
+# Synopsis: Build all docs
+task docs manpagedocs, markdowndocs
+
+# Synopsis: Clean built windows resource file
 task resourceclean {
     Remove-Item -Force -ErrorAction Ignore ./cmd/kutti/rsrc_windows_amd64.syso
 }
@@ -105,6 +132,23 @@ task resourceclean {
 task binclean {
     Remove-Item -Recurse -Force -ErrorAction Ignore ./out
 }
+
+# Synopsis: Clean built manpage docs
+task manpagedocsclean {
+    exec {
+        Remove-Item -Recurse -Force -ErrorAction Ignore ./out/man
+    }
+}
+
+# Synopsis: Clean built markdown docs
+task markdowndocsclean {
+    exec {
+        Remove-Item -Recurse -Force -ErrorAction Ignore ./out/markdown
+    }
+}
+
+# Synopsis: Clean all docs
+task docsclean manpagedocsclean, markdowndocsclean
 
 # Synopsis: Clean everything
 task clean resourceclean, binclean

@@ -3,7 +3,7 @@
 VERSION_MAJOR ?= 0
 VERSION_MINOR ?= 3
 BUILD_NUMBER  ?= 2
-PATCH_NUMBER  ?= -beta1
+PATCH_NUMBER  ?= 
 VERSION_STRING = $(VERSION_MAJOR).$(VERSION_MINOR).$(BUILD_NUMBER)$(PATCH_NUMBER)
 
 KUTTICMDFILES = cmd/kutti/*.go          \
@@ -76,3 +76,28 @@ binclean:
 
 .PHONY: clean
 clean: resourceclean binclean 
+
+out/man:
+	mkdir -p out/man
+
+.PHONY: manpagedocs
+manpagedocs: out/man $(KUTTICMDFILES)
+	go run internal/cmd/gendoc/main.go -o out/man -t manpages
+
+out/markdown:
+	mkdir -p out/markdown
+
+.PHONY: markdowndocs
+markdowndocs: out/markdown $(KUTTICMDFILES)
+	go run internal/cmd/gendoc/main.go -o out/markdown -t markdown
+
+.PHONY: manpagedocsclean
+manfiledocsclean:
+	rm -rf out/man
+
+.PHONY: markdowndocsclean
+markdowndocsclean:
+	rm -rf out/markdown
+
+.PHONY: docsclean
+docsclean: manfiledocsclean markdowndocsclean

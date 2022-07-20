@@ -1,6 +1,8 @@
 package cli
 
-import "github.com/spf13/cobra"
+import (
+	"github.com/spf13/cobra"
+)
 
 // Command represents a kutti CLI command.
 // It wraps a Cobra command object.

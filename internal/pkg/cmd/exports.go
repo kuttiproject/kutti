@@ -32,3 +32,14 @@ func Execute() {
 func SetVersion(version string) {
 	rootCmd.Cmd.Version = version
 }
+
+// ProcessCobraCommandTree builds the command tree, and then invokes the
+// supplied callback function, passing it the root Cobra command. This
+// is for internal tool use.
+func ProcessCobraCommandTree(callback func(c *cobra.Command) error) error {
+	cobra.EnableCommandSorting = false
+	rootCmd.Process(nil)
+
+	err := callback(rootCmd.Cmd)
+	return err
+}
