@@ -1,8 +1,8 @@
 Param(
     $VersionMajor = (property VERSION_MAJOR "0"),
-    $VersionMinor = (property VERSION_MINOR "3"),
-    $BuildNumber  = (property BUILD_NUMBER "1"),
-    $PatchString  = (property PATCH_NUMBER  "")
+    $VersionMinor = (property VERSION_MINOR "4"),
+    $BuildNumber  = (property BUILD_NUMBER "0"),
+    $PatchString  = (property PATCH_NUMBER  "-beta1")
 )
 
 # Maintain semantic version in the parameters above
@@ -18,7 +18,7 @@ $KuttiCmdFiles = (Get-Item "cmd/kutti/*.go") +          `
 
 # Synopsis: Show usage
 task . {
-	Write-Host "Usage: make linux|windows|mac|linux-install-script|windows-installer|mac-install-script|all|installers|clean"
+	Write-Host "Usage: Invoke-Build linux|windows|mac|mac-intel|linux-install-script|windows-installer|mac-install-script|mac-intel-install-script|all|installers|clean"
 }
 
 # Synopsis: Build output directory
@@ -53,8 +53,8 @@ task windows -Outputs out/kutti_windows_amd64.exe -Inputs {$($KuttiCmdFiles) + (
     }
 }
 
-# Synopsis: Build mac binary
-task mac -Outputs out/kutti_darwin_amd64 -Inputs $($KuttiCmdFiles) {
+# Synopsis: Build mac amd64 binary
+task mac-intel -Outputs out/kutti_darwin_amd64 -Inputs $($KuttiCmdFiles) {
     exec {
         $env:CGO_ENABLED="0"
         $env:GOOS="darwin"
@@ -63,8 +63,18 @@ task mac -Outputs out/kutti_darwin_amd64 -Inputs $($KuttiCmdFiles) {
     }
 }
 
+# Synopsis: Build mac arm64 binary
+task mac -Outputs out/kutti_darwin_arm64 -Inputs $($KuttiCmdFiles) {
+    exec {
+        $env:CGO_ENABLED="0"
+        $env:GOOS="darwin"
+        $env:GOARCH="arm64"
+        go build -o $($Outputs) -ldflags "-X main.version=$($VersionString)" ./cmd/kutti/
+    }
+}
+
 # Synopsis: Build linux installation script
-task linux-install-script -Outputs out/get-kutti-linux.sh -Inputs build/package/posix-install-script/generate-script.ps1 outputdir, {
+task linux-install-script -Outputs out/get-kutti-linux-amd64.sh -Inputs build/package/posix-install-script/generate-script.ps1 outputdir, {
     $env:CURRENT_VERSION=$VersionString
     $env:GOOS="linux"
     $env:GOARCH="amd64"
@@ -79,11 +89,22 @@ task windows-installer -Outputs out/kutti-windows-installer.exe -Inputs build/pa
 	makensis -NOCD -V3 -- $($Inputs[0])
 }
 
-# Synopsis: Build mac installation script
-task mac-install-script -Outputs out/get-kutti-darwin.sh -Inputs build/package/posix-install-script/generate-script.ps1 outputdir, {
+# Synopsis: Build Intel mac installation script
+task mac-intel-install-script -Outputs out/get-kutti-darwin-amd64.sh -Inputs build/package/posix-install-script/generate-script.ps1 outputdir, {
     $env:CURRENT_VERSION=$VersionString
     $env:GOOS="darwin"
     $env:GOARCH="amd64"
+
+    exec {
+        Invoke-Expression  $Inputs[0] > $Outputs
+    }
+}
+
+# Synopsis: Build mac installation script
+task mac-install-script -Outputs out/get-kutti-darwin-arm64.sh -Inputs build/package/posix-install-script/generate-script.ps1 outputdir, {
+    $env:CURRENT_VERSION=$VersionString
+    $env:GOOS="darwin"
+    $env:GOARCH="arm64"
 
     exec {
         Invoke-Expression  $Inputs[0] > $Outputs
@@ -115,10 +136,10 @@ task markdowndocs -Outputs out/markdown/kutti.md -Inputs $($KuttiCmdFiles) markd
 }
 
 # Synopsis: Build all binaries
-task all linux, windows, mac
+task all linux, windows, mac, mac-intel
 
 # Synopsis: Build all installers
-task installers linux-install-script, windows-installer, mac-install-script
+task installers linux-install-script, windows-installer, mac-install-script, mac-intel-install-script
 
 # Synopsis: Build all docs
 task docs manpagedocs, markdowndocs
