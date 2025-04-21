@@ -28,7 +28,7 @@ var drivercommand = &cli.Command{
 			Cmd: &cobra.Command{
 				Use:                   "show DRIVERNAME",
 				Aliases:               []string{"get", "inspect", "describe"},
-				Args:                  cobra.ExactValidArgs(1),
+				Args:                  cobra.MatchAll(cobra.ExactArgs(1), cobra.OnlyValidArgs),
 				ValidArgsFunction:     DrivernameValidArgs,
 				Short:                 "Show details of a driver",
 				RunE:                  driverShowCommand,
@@ -40,7 +40,7 @@ var drivercommand = &cli.Command{
 			Cmd: &cobra.Command{
 				Use:                   "update DRIVERNAME",
 				Aliases:               []string{"updateimages"},
-				Args:                  cobra.ExactValidArgs(1),
+				Args:                  cobra.MatchAll(cobra.ExactArgs(1), cobra.OnlyValidArgs),
 				ValidArgsFunction:     DrivernameValidArgs,
 				Short:                 "Update image list for this driver",
 				Long:                  "Update image list for this driver.",
@@ -53,7 +53,7 @@ var drivercommand = &cli.Command{
 			Cmd: &cobra.Command{
 				Use:                   "select DRIVERNAME",
 				Aliases:               []string{"setdefault", "default"},
-				Args:                  cobra.ExactValidArgs(1),
+				Args:                  cobra.MatchAll(cobra.ExactArgs(1), cobra.OnlyValidArgs),
 				ValidArgsFunction:     DrivernameValidArgs,
 				Short:                 "Select default driver",
 				RunE:                  driverSelectCommand,

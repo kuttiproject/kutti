@@ -27,7 +27,7 @@ var clusterCmd = &cli.Command{
 			Cmd: &cobra.Command{
 				Use:                   "show CLUSTERNAME",
 				Aliases:               []string{"get", "inspect", "describe"},
-				Args:                  cobra.ExactValidArgs(1),
+				Args:                  cobra.MatchAll(cobra.ExactArgs(1), cobra.OnlyValidArgs),
 				ValidArgsFunction:     NameValidArgs,
 				Short:                 "Show details of a cluster",
 				RunE:                  clusterShowCommand,
@@ -38,7 +38,7 @@ var clusterCmd = &cli.Command{
 			Cmd: &cobra.Command{
 				Use:                   "select CLUSTERNAME",
 				Aliases:               []string{"setdefault", "default"},
-				Args:                  cobra.ExactValidArgs(1),
+				Args:                  cobra.MatchAll(cobra.ExactArgs(1), cobra.OnlyValidArgs),
 				ValidArgsFunction:     NameValidArgs,
 				Short:                 "Select default cluster",
 				RunE:                  clusterSelectCommand,
@@ -61,7 +61,7 @@ var clusterCmd = &cli.Command{
 			Cmd: &cobra.Command{
 				Use:                   "rm CLUSTERNAME",
 				Aliases:               []string{"remove", "delete", "del"},
-				Args:                  cobra.ExactValidArgs(1),
+				Args:                  cobra.MatchAll(cobra.ExactArgs(1), cobra.OnlyValidArgs),
 				ValidArgsFunction:     NameValidArgs,
 				Short:                 "Remove cluster",
 				RunE:                  clusterRmCommand,

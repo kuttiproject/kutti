@@ -27,7 +27,7 @@ var versionCmd = &cli.Command{
 			Cmd: &cobra.Command{
 				Use:               "show K8SVERSION",
 				Aliases:           []string{"get", "inspect", "describe"},
-				Args:              cobra.ExactValidArgs(1),
+				Args:              cobra.MatchAll(cobra.ExactArgs(1), cobra.OnlyValidArgs),
 				ValidArgsFunction: NameValidArgs,
 				Short:             "Show details of a version",
 				RunE:              versionShowCommand,
@@ -38,7 +38,7 @@ var versionCmd = &cli.Command{
 			Cmd: &cobra.Command{
 				Use:               "select K8SVERSION",
 				Aliases:           []string{"setdefault", "default"},
-				Args:              cobra.ExactValidArgs(1),
+				Args:              cobra.MatchAll(cobra.ExactArgs(1), cobra.OnlyValidArgs),
 				ValidArgsFunction: NameValidArgs,
 				Short:             "Select default version",
 				RunE:              versionSelectCommand,
@@ -61,7 +61,7 @@ var versionCmd = &cli.Command{
 			Cmd: &cobra.Command{
 				Use:                   "pull [flags] K8SVERSION",
 				Aliases:               []string{"fetch", "get"},
-				Args:                  cobra.ExactValidArgs(1),
+				Args:                  cobra.MatchAll(cobra.ExactArgs(1), cobra.OnlyValidArgs),
 				ValidArgsFunction:     NameValidArgs,
 				Short:                 "Download version image",
 				RunE:                  versionPullCommand,
@@ -79,7 +79,7 @@ var versionCmd = &cli.Command{
 			Cmd: &cobra.Command{
 				Use:               "rm K8SVERSION",
 				Aliases:           []string{"remove", "delete", "del", "purge", "purgelocal"},
-				Args:              cobra.ExactValidArgs(1),
+				Args:              cobra.MatchAll(cobra.ExactArgs(1), cobra.OnlyValidArgs),
 				ValidArgsFunction: NameValidArgs,
 				Short:             "Remove version image",
 				RunE:              versionRmCommand,
@@ -94,6 +94,7 @@ var versionCmd = &cli.Command{
 				Short:         "Update image list",
 				RunE:          versionUpdateCommand,
 				SilenceErrors: true,
+				SilenceUsage:  true,
 			},
 			SetFlagsFunc: SetDriverFlag,
 		},

@@ -27,7 +27,7 @@ var nodeCmd = &cli.Command{
 			Cmd: &cobra.Command{
 				Use:               "show NODENAME",
 				Aliases:           []string{"get", "inspect", "describe"},
-				Args:              cobra.ExactValidArgs(1),
+				Args:              cobra.MatchAll(cobra.ExactArgs(1), cobra.OnlyValidArgs),
 				ValidArgsFunction: NameValidArgs,
 				Short:             "Show details of node",
 				RunE:              nodeShowCommand,
@@ -38,7 +38,7 @@ var nodeCmd = &cli.Command{
 			Cmd: &cobra.Command{
 				Use:               "rm NODENAME",
 				Aliases:           []string{"remove", "delete", "del"},
-				Args:              cobra.ExactValidArgs(1),
+				Args:              cobra.MatchAll(cobra.ExactArgs(1), cobra.OnlyValidArgs),
 				ValidArgsFunction: NameValidArgs,
 				Short:             "Remove node",
 				RunE:              nodeRmCommand,
@@ -110,7 +110,7 @@ var nodeCmd = &cli.Command{
 			Cmd: &cobra.Command{
 				Use:               "publish NODENAME",
 				Short:             "Publish a node port to a host port",
-				Args:              cobra.ExactValidArgs(1),
+				Args:              cobra.MatchAll(cobra.ExactArgs(1), cobra.OnlyValidArgs),
 				ValidArgsFunction: NameValidArgs,
 				RunE:              nodePublishCommand,
 				SilenceErrors:     true,
@@ -129,7 +129,7 @@ var nodeCmd = &cli.Command{
 			Cmd: &cobra.Command{
 				Use:               "unpublish NODENAME",
 				Short:             "Un-publish a node port",
-				Args:              cobra.ExactValidArgs(1),
+				Args:              cobra.MatchAll(cobra.ExactArgs(1), cobra.OnlyValidArgs),
 				ValidArgsFunction: NameValidArgs,
 				RunE:              nodeUnpublishCommand,
 				SilenceErrors:     true,
@@ -145,7 +145,7 @@ var nodeCmd = &cli.Command{
 			Cmd: &cobra.Command{
 				Use:               "ssh NODENAME",
 				Short:             "Open an SSH connection to the node",
-				Args:              cobra.ExactValidArgs(1),
+				Args:              cobra.MatchAll(cobra.ExactArgs(1), cobra.OnlyValidArgs),
 				ValidArgsFunction: NameValidArgs,
 				RunE:              nodeSSHCommand,
 				SilenceErrors:     true,
@@ -159,8 +159,9 @@ var nodeCmd = &cli.Command{
 		},
 		{
 			Cmd: &cobra.Command{
-				Use:   "scp SOURCE TARGET",
-				Short: "Copy a file to or from the node",
+				Use:     "scp SOURCE TARGET",
+				Aliases: []string{"cp"},
+				Short:   "Copy a file to or from the node",
 				Long: `
 Copy a file to or from the node.
 			
