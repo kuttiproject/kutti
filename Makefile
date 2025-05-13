@@ -3,7 +3,7 @@
 VERSION_MAJOR ?= 0
 VERSION_MINOR ?= 4
 BUILD_NUMBER  ?= 0
-PATCH_NUMBER  ?= -beta1
+PATCH_NUMBER  ?= 
 VERSION_STRING = $(VERSION_MAJOR).$(VERSION_MINOR).$(BUILD_NUMBER)$(PATCH_NUMBER)
 
 KUTTICMDFILES = cmd/kutti/*.go          \
@@ -52,7 +52,7 @@ out/get-kutti-darwin-arm64.sh: build/package/posix-install-script/generate-scrip
 linux: out/kutti_linux_amd64
 
 .PHONY: linux-install-script
-linux-install-script: out/get-kutti-linux.sh
+linux-install-script: out/get-kutti-linux-amd64.sh
 
 .PHONY: windows
 windows: out/kutti_windows_amd64.exe

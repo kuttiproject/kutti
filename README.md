@@ -9,5 +9,6 @@ This repository contains the CLI for the kutti project. The CLI is inspired by t
 
 The CLI includes a simple SSH client for connecting to nodes it creates.
 
+The kutti CLI is currently avaiable for Linux and Windows on amd64, and macOS on amd64 and arm64. It can be downloaded from the [latest release page](https://github.com/kuttiproject/kutti/releases/latest).
 
 <img src="https://github.com/kuttiproject/driver-vbox-images/blob/main/attachments/icon/kutta.png?raw=true" width="32" height="32" /> Icon made by [Freepik](https://www.freepik.com) from [Flaticon](http://www.flaticon.com)

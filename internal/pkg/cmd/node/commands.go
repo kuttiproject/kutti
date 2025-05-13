@@ -144,6 +144,7 @@ var nodeCmd = &cli.Command{
 		{
 			Cmd: &cobra.Command{
 				Use:               "ssh NODENAME",
+				Aliases:           []string{"attach"},
 				Short:             "Open an SSH connection to the node",
 				Args:              cobra.MatchAll(cobra.ExactArgs(1), cobra.OnlyValidArgs),
 				ValidArgsFunction: NameValidArgs,

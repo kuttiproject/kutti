@@ -14,13 +14,13 @@ require (
 
 require (
 	github.com/containerd/console v1.0.4 // indirect
-	github.com/cpuguy83/go-md2man/v2 v2.0.6 // indirect
+	github.com/cpuguy83/go-md2man/v2 v2.0.7 // indirect
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
 	github.com/kuttiproject/drivercore v0.3.1 // indirect
-	github.com/povsister/scp v0.0.0-20240802064259-28781e87b246 // indirect
+	github.com/povsister/scp v0.0.0-20250504051308-e467f71ea63c // indirect
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
 	github.com/spf13/pflag v1.0.6 // indirect
-	golang.org/x/crypto v0.37.0 // indirect
-	golang.org/x/sys v0.32.0 // indirect
+	golang.org/x/crypto v0.38.0 // indirect
+	golang.org/x/sys v0.33.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
