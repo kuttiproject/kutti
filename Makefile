@@ -1,7 +1,7 @@
 # Maintain semantic version
 # Also change in cmd/kutti/main.go
 VERSION_MAJOR ?= 0
-VERSION_MINOR ?= 4
+VERSION_MINOR ?= 5
 BUILD_NUMBER  ?= 0
 PATCH_NUMBER  ?= 
 VERSION_STRING = $(VERSION_MAJOR).$(VERSION_MINOR).$(BUILD_NUMBER)$(PATCH_NUMBER)

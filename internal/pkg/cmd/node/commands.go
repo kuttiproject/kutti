@@ -144,7 +144,7 @@ var nodeCmd = &cli.Command{
 		{
 			Cmd: &cobra.Command{
 				Use:               "ssh NODENAME",
-				Aliases:           []string{"attach"},
+				Aliases:           []string{"attach", "shell"},
 				Short:             "Open an SSH connection to the node",
 				Args:              cobra.MatchAll(cobra.ExactArgs(1), cobra.OnlyValidArgs),
 				ValidArgsFunction: NameValidArgs,
@@ -161,7 +161,7 @@ var nodeCmd = &cli.Command{
 		{
 			Cmd: &cobra.Command{
 				Use:     "scp SOURCE TARGET",
-				Aliases: []string{"cp"},
+				Aliases: []string{"cp", "copy"},
 				Short:   "Copy a file to or from the node",
 				Long: `
 Copy a file to or from the node.

@@ -84,6 +84,7 @@ func versionlsCommand(c *cobra.Command, args []string) error {
 		[]*cli.TableColumn{
 			{Name: "K8sVersion", Title: "K8s Version", Width: 15, DefaultCheck: true},
 			{Name: "Status", Width: 15},
+			{Name: "Deprecated", Width: 15},
 		},
 		defaultversion,
 	)

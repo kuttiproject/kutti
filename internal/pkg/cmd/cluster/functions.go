@@ -230,6 +230,8 @@ func clusterUpCommand(c *cobra.Command, args []string) error {
 		)
 	}
 
+	kuttilog.Printf(kuttilog.Info, "Bringing up cluster %v...\n", clustername)
+
 	for _, nodename := range cluster.NodeNames() {
 		StartNode(cluster, nodename, false)
 	}
@@ -253,6 +255,8 @@ func clusterDownCommand(c *cobra.Command, args []string) error {
 			clustername,
 		)
 	}
+
+	kuttilog.Printf(kuttilog.Info, "Bringing down cluster %v...\n", clustername)
 
 	for _, nodename := range cluster.NodeNames() {
 		StopNode(cluster, nodename, false)
