@@ -64,7 +64,7 @@ windows-installer: out/kutti-windows-installer.exe
 mac-intel: out/kutti_darwin_amd64
 
 .PHONY: mac-intel-install-script
-mac-install-script: out/get-kutti-darwin-amd64.sh
+mac-intel-install-script: out/get-kutti-darwin-amd64.sh
 
 .PHONY: mac
 mac: out/kutti_darwin_arm64
