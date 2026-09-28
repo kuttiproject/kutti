@@ -17,6 +17,7 @@ require (
 	github.com/containerd/console v1.0.5 // indirect
 	github.com/cpuguy83/go-md2man/v2 v2.0.7 // indirect
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
+	github.com/kuttiproject/driver-qemu v0.1.0 // indirect
 	github.com/kuttiproject/drivercore v0.3.1 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/povsister/scp v0.0.0-20250701154629-777cf82de5df // indirect

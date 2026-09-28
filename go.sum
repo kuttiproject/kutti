@@ -9,6 +9,8 @@ github.com/kuttiproject/driver-hyperv v0.2.1 h1:hmqNQW4EkEOKt+NV8YERtyMDikGOM5+T
 github.com/kuttiproject/driver-hyperv v0.2.1/go.mod h1:TuEjY3DvqvAIeiUuqo0zPcwEHOpcvQi6uMyy0okp0gs=
 github.com/kuttiproject/driver-lima v0.1.0 h1:20qj8ttmojrUGyR5jbNjldk2BJk6o7l1IxaRBLgRwZw=
 github.com/kuttiproject/driver-lima v0.1.0/go.mod h1:z/ib289XLBevesgE1uwvFPf39BuWcYZk+STDshgilZM=
+github.com/kuttiproject/driver-qemu v0.1.0 h1:AnCD6rv0gauw4GRcKcu7mEXn4PnuPCZKRPIXoFZzPbQ=
+github.com/kuttiproject/driver-qemu v0.1.0/go.mod h1:CnzZVCwdZawwQpG0dtQVXrB7R1LT9iEsSklcKj1YrOI=
 github.com/kuttiproject/driver-vbox v0.4.0 h1:dC7AbRS7RxNj1KkdDqj5A6KcmflfJ0cD1sS6HIcsu5Q=
 github.com/kuttiproject/driver-vbox v0.4.0/go.mod h1:zrme/jMS0wQh9O95FUId0J2HJNUIFKNpHocT0F/zKM4=
 github.com/kuttiproject/drivercore v0.3.1 h1:2AV16YAkTVzot07HRCgL3TRdaUdPYmcnFnH6OONvduI=
