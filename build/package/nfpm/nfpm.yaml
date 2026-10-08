@@ -1,0 +1,42 @@
+# nfpm configuration for kutti
+name: "kutti"
+arch: "${ARCH}"
+platform: "linux"
+version: "${VERSION}"
+section: "devel"
+priority: "optional"
+maintainer: "Kutti Project <https://github.com/kuttiproject/kutti>"
+description: "A CLI tool for managing local Kubernetes clusters and nodes"
+vendor: "kuttiproject"
+homepage: "https://github.com/kuttiproject/kutti"
+license: "MIT"
+
+contents:
+  - src: ./out/kutti_linux_amd64
+    dst: /usr/bin/kutti
+    file_info:
+      mode: 0755
+  - src: ./out/man/*.1
+    dst: /usr/share/man/man1/
+    file_info:
+      mode: 0644
+  - src: ./out/completions/kutti.bash
+    dst: /usr/share/bash-completion/completions/kutti
+    file_info:
+      mode: 0644
+  - src: ./out/completions/_kutti
+    dst: /usr/share/zsh/vendor-completions/_kutti
+    file_info:
+      mode: 0644
+  - src: ./out/completions/kutti.fish
+    dst: /usr/share/fish/vendor_completions.d/kutti.fish
+    file_info:
+      mode: 0644
+  - src: ./LICENSE
+    dst: /usr/share/doc/kutti/copyright
+    file_info:
+      mode: 0644
+  - src: ./README.md
+    dst: /usr/share/doc/kutti/README.md
+    file_info:
+      mode: 0644

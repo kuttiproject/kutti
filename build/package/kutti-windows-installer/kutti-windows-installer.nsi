@@ -28,7 +28,7 @@ Section
     # Files
     File /oname=kutti.exe out/kutti_windows_amd64.exe
     File /oname=kutti.ico cmd/kutti/winres/icon.ico
-    File /oname=kutti-completion.ps1 out/kutti-completion.ps1
+    File /oname=kutti-completion.ps1 out/completions/kutti-completion.ps1
 
     # Windows Terminal JSON Fragment
     SetOutPath "$LOCALAPPDATA\Microsoft\Windows Terminal\Fragments\Kutti\"

@@ -17,7 +17,7 @@ KUTTICMDFILES = cmd/kutti/*.go          \
 # Targets
 .PHONY: usage
 usage:
-	@echo "Usage: make linux|windows|mac|mac-intel|linux-install-script|windows-installer|mac-install-script|mac-intel-install-script|all|installers|clean"
+	@echo "Usage: make linux|windows|mac|mac-intel|deb|rpm|archlinux|linux-packages|windows-installer|linux-install-script|mac-install-script|mac-intel-install-script|all|installers|clean"
 
 out/:
 	mkdir -p out
@@ -34,11 +34,47 @@ cmd/kutti/rsrc_windows_amd64.syso: cmd/kutti/winres/*
 out/kutti_windows_amd64.exe: $(KUTTICMDFILES) cmd/kutti/rsrc_windows_amd64.syso
 	CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build -o $@ -ldflags "-X main.version=${VERSION_STRING}" ./cmd/kutti/
 
-out/kutti-completion.ps1: $(KUTTICMDFILES) out/
+out/completions:
+	mkdir -p out/completions
+
+out/completions/kutti-completion.ps1: $(KUTTICMDFILES) | out/completions
 	go run ./cmd/kutti completion powershell > $@
 
-out/kutti-windows-installer.exe: build/package/kutti-windows-installer/kutti-windows-installer.nsi out/kutti_windows_amd64.exe out/kutti-completion.ps1
+out/completions/kutti.bash: $(KUTTICMDFILES) | out/completions
+	go run ./cmd/kutti completion bash > $@
+
+out/completions/_kutti: $(KUTTICMDFILES) | out/completions
+	go run ./cmd/kutti completion zsh > $@
+
+out/completions/kutti.fish: $(KUTTICMDFILES) | out/completions
+	go run ./cmd/kutti completion fish > $@
+
+.PHONY: completions
+completions: out/completions/kutti.bash out/completions/_kutti out/completions/kutti.fish out/completions/kutti-completion.ps1
+
+out/kutti-windows-installer.exe: build/package/kutti-windows-installer/kutti-windows-installer.nsi out/kutti_windows_amd64.exe out/completions/kutti-completion.ps1
 	makensis -NOCD -V3 -DVERSION="${VERSION_STRING}" -DVERSION_FOUR_PART="${VERSION_FOUR_PART}" -- $<
+
+out/kutti_$(VERSION_STRING)_linux_amd64.deb: build/package/nfpm/nfpm.yaml out/kutti_linux_amd64 manpagedocs completions
+	VERSION=$(VERSION_STRING) ARCH=amd64 nfpm package -f $< -p deb -t $@
+
+out/kutti-$(VERSION_STRING)-1.x86_64.rpm: build/package/nfpm/nfpm.yaml out/kutti_linux_amd64 manpagedocs completions
+	VERSION=$(VERSION_STRING) ARCH=amd64 nfpm package -f $< -p rpm -t $@
+
+out/kutti-$(VERSION_STRING)-1-x86_64.pkg.tar.zst: build/package/nfpm/nfpm.yaml out/kutti_linux_amd64 manpagedocs completions
+	VERSION=$(VERSION_STRING) ARCH=amd64 nfpm package -f $< -p archlinux -t $@
+
+.PHONY: deb
+deb: out/kutti_$(VERSION_STRING)_linux_amd64.deb
+
+.PHONY: rpm
+rpm: out/kutti-$(VERSION_STRING)-1.x86_64.rpm
+
+.PHONY: archlinux
+archlinux: out/kutti-$(VERSION_STRING)-1-x86_64.pkg.tar.zst
+
+.PHONY: linux-packages
+linux-packages: deb rpm archlinux
 
 out/kutti_darwin_amd64: $(KUTTICMDFILES)
 	CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 go build -o $@ -ldflags "-X main.version=${VERSION_STRING}" ./cmd/kutti/
@@ -80,7 +116,7 @@ mac-install-script: out/get-kutti-darwin-arm64.sh
 all: linux windows mac mac-intel
 
 .PHONY: installers
-installers: linux-install-script windows-installer mac-install-script mac-intel-install-script
+installers: linux-packages windows-installer mac-install-script mac-intel-install-script
 
 .PHONY: resourceclean
 resourceclean:
