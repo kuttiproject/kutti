@@ -2,10 +2,10 @@ package main
 
 // On Mac OS on Apple silicon, we will include the following drivers:
 //	- vbox
-//  - lima
+//  - lima (remvoved for now)
 
 import (
-	_ "github.com/kuttiproject/driver-lima"
+	//	_ "github.com/kuttiproject/driver-lima"
 	_ "github.com/kuttiproject/driver-vbox"
 	"github.com/kuttiproject/kutti/internal/pkg/cli"
 )

@@ -60,8 +60,8 @@ func StartNode(cluster *kuttilib.Cluster, nodename string, force bool) error {
 		err = node.Start()
 	}
 	if err != nil {
-		kuttilog.Printf(
-			kuttilog.Info,
+		return cli.WrapErrorMessagef(
+			1,
 			"Node '%v' could not be started: %v",
 			nodename,
 			err,

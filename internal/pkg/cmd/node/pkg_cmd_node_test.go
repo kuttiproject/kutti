@@ -110,6 +110,132 @@ func TestCPArg(t *testing.T) {
 			},
 		},
 		{
+			arg:           "node-1:file1",
+			errorexpected: false,
+			expected: &cparg{
+				nodename:          "node-1",
+				filepath:          "file1",
+				hasnodename:       true,
+				iswindowsfilepath: false,
+				localfileexists:   false,
+				localisdirectory:  false,
+			},
+		},
+		{
+			arg:           "k8s_worker_node-01:file1",
+			errorexpected: false,
+			expected: &cparg{
+				nodename:          "k8s_worker_node-01",
+				filepath:          "file1",
+				hasnodename:       true,
+				iswindowsfilepath: false,
+				localfileexists:   false,
+				localisdirectory:  false,
+			},
+		},
+		{
+			arg:           "n1:file1",
+			errorexpected: false,
+			expected: &cparg{
+				nodename:          "n1",
+				filepath:          "file1",
+				hasnodename:       true,
+				iswindowsfilepath: false,
+				localfileexists:   false,
+				localisdirectory:  false,
+			},
+		},
+		{
+			arg:           "ab:file1",
+			errorexpected: false,
+			expected: &cparg{
+				nodename:          "ab",
+				filepath:          "file1",
+				hasnodename:       true,
+				iswindowsfilepath: false,
+				localfileexists:   false,
+				localisdirectory:  false,
+			},
+		},
+		{
+			// 63 characters (1 letter + 62 chars) - maximum valid length
+			arg:           "a012345678901234567890123456789012345678901234567890123456789_-:file1",
+			errorexpected: false,
+			expected: &cparg{
+				nodename:          "a012345678901234567890123456789012345678901234567890123456789_-",
+				filepath:          "file1",
+				hasnodename:       true,
+				iswindowsfilepath: false,
+				localfileexists:   false,
+				localisdirectory:  false,
+			},
+		},
+		{
+			// 64 characters - exceeds maximum allowed length
+			arg:           "a012345678901234567890123456789012345678901234567890123456789_--:file1",
+			errorexpected: true,
+			expected: &cparg{
+				nodename:          "",
+				filepath:          "",
+				hasnodename:       false,
+				iswindowsfilepath: false,
+				localfileexists:   false,
+				localisdirectory:  false,
+			},
+		},
+		{
+			// Starts with hyphen - invalid
+			arg:           "-node1:file1",
+			errorexpected: true,
+			expected: &cparg{
+				nodename:          "",
+				filepath:          "",
+				hasnodename:       false,
+				iswindowsfilepath: false,
+				localfileexists:   false,
+				localisdirectory:  false,
+			},
+		},
+		{
+			// Starts with underscore - invalid
+			arg:           "_node1:file1",
+			errorexpected: true,
+			expected: &cparg{
+				nodename:          "",
+				filepath:          "",
+				hasnodename:       false,
+				iswindowsfilepath: false,
+				localfileexists:   false,
+				localisdirectory:  false,
+			},
+		},
+		{
+			// Starts with digit - invalid
+			arg:           "1node:file1",
+			errorexpected: true,
+			expected: &cparg{
+				nodename:          "",
+				filepath:          "",
+				hasnodename:       false,
+				iswindowsfilepath: false,
+				localfileexists:   false,
+				localisdirectory:  false,
+			},
+		},
+		{
+			// Contains dot - invalid character
+			arg:           "node.1:file1",
+			errorexpected: true,
+			expected: &cparg{
+				nodename:          "",
+				filepath:          "",
+				hasnodename:       false,
+				iswindowsfilepath: false,
+				localfileexists:   false,
+				localisdirectory:  false,
+			},
+		},
+		{
 			arg:           "node1:ud/\\/\\|\000[]*?",
 			errorexpected: true,
 			expected: &cparg{

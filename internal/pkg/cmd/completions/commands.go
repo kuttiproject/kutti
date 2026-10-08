@@ -30,7 +30,7 @@ Zsh:
   $ echo "autoload -U compinit; compinit" >> ~/.zshrc
 
   # To load completions for each session, execute once:
-  $ kutti completion zsh > "${fpath[1]}/_yourprogram"
+  $ kutti completion zsh > "${fpath[1]}/_kutti"
 
   # You will need to start a new shell for this setup to take effect.
 

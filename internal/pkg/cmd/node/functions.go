@@ -192,19 +192,30 @@ func nodeCreateCommand(cmd *cobra.Command, args []string) error {
 		)
 	}
 
-	// Check for sshport for drivers that require it
+	// Validate SSH port requirements based on driver networking:
+	// 1. If sshport is specified: ensure driver supports NAT, port is valid (1-65535), and host port is free.
+	// 2. If sshport is omitted: ensure driver does NOT require NAT networking.
 	driver := cluster.Driver()
 	sshport, _ := cmd.Flags().GetInt("sshport")
-	if driver.UsesNATNetworking() && sshport == 0 {
-		return cli.WrapErrorMessagef(
-			1,
-			"SSH port forwarding required for nodes in the '%v' cluster",
-			cluster.Name(),
-		)
-	}
+	usesNATNetworking := driver.UsesNATNetworking()
 
-	// Check if sshport is occupied
 	if sshport != 0 {
+		if !usesNATNetworking {
+			return cli.WrapErrorMessagef(
+				1,
+				"SSH port forwarding cannot be specified for nodes in the '%v' cluster, as the '%v' driver does not use NAT networking",
+				cluster.Name(),
+				driver.Name(),
+			)
+		}
+
+		if !kuttilib.ValidPort(sshport) {
+			return cli.WrapErrorMessage(
+				1,
+				"please provide a valid sshport. Valid ports are between 1 and 65535",
+			)
+		}
+
 		err = cluster.CheckHostPort(sshport)
 		if err != nil {
 			return cli.WrapErrorMessagef(
@@ -212,6 +223,14 @@ func nodeCreateCommand(cmd *cobra.Command, args []string) error {
 				"cannot use host port %v: %v",
 				sshport,
 				err,
+			)
+		}
+	} else {
+		if usesNATNetworking {
+			return cli.WrapErrorMessagef(
+				1,
+				"SSH port forwarding required for nodes in the '%v' cluster",
+				cluster.Name(),
 			)
 		}
 	}
@@ -229,7 +248,7 @@ func nodeCreateCommand(cmd *cobra.Command, args []string) error {
 
 	// Forward SSH port
 	// Belt and suspenders if condition
-	if driver.UsesNATNetworking() && sshport != 0 {
+	if usesNATNetworking && sshport != 0 {
 		err = newnode.ForwardSSHPort(sshport)
 		if err != nil {
 			kuttilog.Printf(kuttilog.Quiet, "Warning: Could not forward SSH port: %v.", err)
@@ -267,11 +286,17 @@ func nodeStartCommand(c *cobra.Command, args []string) error {
 		return clustercmd.StartNode(cluster, args[0], forceflag)
 	}
 
+	var hasError bool
 	for _, nodename := range args {
 		err = clustercmd.StartNode(cluster, nodename, forceflag)
 		if err != nil {
-			kuttilog.Printf(kuttilog.Info, "Warning: %v.", err)
+			hasError = true
+			kuttilog.Printf(kuttilog.Minimal, "Error starting node '%s': %v\n", nodename, err)
 		}
+	}
+
+	if hasError {
+		return cli.WrapErrorMessage(1, "one or more nodes failed to start")
 	}
 
 	return nil
@@ -297,11 +322,17 @@ func nodeStopCommand(c *cobra.Command, args []string) error {
 		return clustercmd.StopNode(cluster, args[0], forceflag)
 	}
 
+	var hasError bool
 	for _, nodename := range args {
 		err = clustercmd.StopNode(cluster, nodename, forceflag)
 		if err != nil {
-			kuttilog.Printf(kuttilog.Info, "Warning: %v.", err)
+			hasError = true
+			kuttilog.Printf(kuttilog.Minimal, "Error stopping node '%s': %v\n", nodename, err)
 		}
+	}
+
+	if hasError {
+		return cli.WrapErrorMessage(1, "one or more nodes failed to stop")
 	}
 
 	return nil
@@ -567,7 +598,9 @@ func parseCPArg(arg string) (*cparg, error) {
 	// The nodename followed by a colon may not appear at all, in
 	// which case submatch[1] and [2] will be empty, and
 	// submatch[5] will be just the path.
-	cpargregex, _ := regexp.Compile("^((([A-Z])|([a-z][a-z0-9]{0,9})):){0,1}([^:]*)$")
+	//cpargregex, _ := regexp.Compile("^((([A-Z])|([a-z][a-z0-9]{0,9})):){0,1}([^:]*)$")
+	cpargregex, _ := regexp.Compile("^((([A-Za-z])|([a-z][a-z0-9_-]{1,62})):){0,1}([^:]*)$")
+
 	results := cpargregex.FindStringSubmatch(arg)
 
 	// If no match, argument is invalid

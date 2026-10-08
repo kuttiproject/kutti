@@ -53,7 +53,7 @@ var prettydurations = []prettyduration{
 		handler: func(d time.Duration) string {
 			return prettyfyduration(
 				"day",
-				math.Round(d.Hours()/86400),
+				math.Round(d.Hours()/24),
 			)
 		},
 	},

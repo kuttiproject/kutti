@@ -43,7 +43,7 @@ func clusterLsCommand(c *cobra.Command, args []string) {
 
 	defaultcluster, _ := cli.Default("cluster")
 	var clusterlsFormatter = cli.NewTableRenderer(
-		"driverls",
+		"clusterls",
 		[]*cli.TableColumn{
 			{Name: "Name", Title: "Name", Width: 15, DefaultCheck: true},
 			{Name: "DriverName", Title: "Driver", Width: 15},
@@ -203,7 +203,7 @@ func getclustername(args []string) (string, error) {
 		if !ok {
 			return "", cli.WrapErrorMessage(
 				1,
-				"no cluster specified and default cluster not set. Use --cluster, or select a default cluster using 'kutti cluster select'",
+				"no cluster specified and default cluster not set. Either specify a cluster name, or select a default cluster using 'kutti cluster select'",
 			)
 		}
 
@@ -232,8 +232,17 @@ func clusterUpCommand(c *cobra.Command, args []string) error {
 
 	kuttilog.Printf(kuttilog.Info, "Bringing up cluster %v...\n", clustername)
 
+	var hasError bool
 	for _, nodename := range cluster.NodeNames() {
-		StartNode(cluster, nodename, false)
+		err := StartNode(cluster, nodename, false)
+		if err != nil {
+			hasError = true
+			kuttilog.Printf(kuttilog.Minimal, "Error starting node '%s': %v\n", nodename, err)
+		}
+	}
+
+	if hasError {
+		return cli.WrapErrorMessagef(1, "could not start all nodes in cluster '%v'", clustername)
 	}
 
 	return nil
@@ -258,8 +267,17 @@ func clusterDownCommand(c *cobra.Command, args []string) error {
 
 	kuttilog.Printf(kuttilog.Info, "Bringing down cluster %v...\n", clustername)
 
+	var hasError bool
 	for _, nodename := range cluster.NodeNames() {
-		StopNode(cluster, nodename, false)
+		err := StopNode(cluster, nodename, false)
+		if err != nil {
+			hasError = true
+			kuttilog.Printf(kuttilog.Minimal, "Error stopping node '%s': %v\n", nodename, err)
+		}
+	}
+
+	if hasError {
+		return cli.WrapErrorMessagef(1, "could not stop all nodes in cluster '%v'", clustername)
 	}
 
 	return nil

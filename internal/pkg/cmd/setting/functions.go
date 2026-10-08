@@ -60,7 +60,7 @@ func configSetCommand(c *cobra.Command, args []string) error {
 	return nil
 }
 
-func comfigRmCommand(cmd *cobra.Command, args []string) error {
+func configRmCommand(cmd *cobra.Command, args []string) error {
 	setting := args[0]
 	return cli.RemoveSetting(setting)
 }

@@ -80,7 +80,7 @@ func versionlsCommand(c *cobra.Command, args []string) error {
 
 	defaultversion, _ := cli.Default("version")
 	var versionlsFormatter = cli.NewTableRenderer(
-		"driverls",
+		"versionls",
 		[]*cli.TableColumn{
 			{Name: "K8sVersion", Title: "K8s Version", Width: 15, DefaultCheck: true},
 			{Name: "Status", Width: 15},
