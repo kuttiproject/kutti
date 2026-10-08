@@ -17,7 +17,7 @@ KUTTICMDFILES = cmd/kutti/*.go          \
 # Targets
 .PHONY: usage
 usage:
-	@echo "Usage: make linux|windows|mac|mac-intel|deb|rpm|archlinux|linux-packages|windows-installer|linux-install-script|mac-install-script|mac-intel-install-script|all|installers|clean"
+	@echo "Usage: make linux|windows|mac|mac-intel|deb|rpm|archlinux|linux-packages|completions|windows-installer|all|installers|clean"
 
 out/:
 	mkdir -p out
@@ -25,8 +25,6 @@ out/:
 out/kutti_linux_amd64: $(KUTTICMDFILES)
 	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o $@ -ldflags "-X main.version=${VERSION_STRING}" ./cmd/kutti/
 
-out/get-kutti-linux-amd64.sh: build/package/posix-install-script/generate-script.sh out/
-	CURRENT_VERSION=${VERSION_STRING} GOOS=linux GOARCH=amd64 $< > $@
 
 cmd/kutti/rsrc_windows_amd64.syso: cmd/kutti/winres/*
 	go-winres make --in=cmd/kutti/winres/winres.json --out=cmd/kutti/rsrc --arch=amd64 --product-version=${VERSION_STRING} --file-version=${VERSION_STRING}
@@ -79,20 +77,11 @@ linux-packages: deb rpm archlinux
 out/kutti_darwin_amd64: $(KUTTICMDFILES)
 	CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 go build -o $@ -ldflags "-X main.version=${VERSION_STRING}" ./cmd/kutti/
 
-out/get-kutti-darwin-amd64.sh: build/package/posix-install-script/generate-script.sh out/
-	CURRENT_VERSION=${VERSION_STRING} GOOS=darwin GOARCH=amd64 $< > $@
-
 out/kutti_darwin_arm64: $(KUTTICMDFILES)
 	CGO_ENABLED=0 GOOS=darwin GOARCH=arm64 go build -o $@ -ldflags "-X main.version=${VERSION_STRING}" ./cmd/kutti/
 
-out/get-kutti-darwin-arm64.sh: build/package/posix-install-script/generate-script.sh out/
-	CURRENT_VERSION=${VERSION_STRING} GOOS=darwin GOARCH=arm64 $< > $@
-
 .PHONY: linux
 linux: out/kutti_linux_amd64
-
-.PHONY: linux-install-script
-linux-install-script: out/get-kutti-linux-amd64.sh
 
 .PHONY: windows
 windows: out/kutti_windows_amd64.exe
@@ -103,20 +92,14 @@ windows-installer: out/kutti-windows-installer.exe
 .PHONY: mac-intel
 mac-intel: out/kutti_darwin_amd64
 
-.PHONY: mac-intel-install-script
-mac-intel-install-script: out/get-kutti-darwin-amd64.sh
-
 .PHONY: mac
 mac: out/kutti_darwin_arm64
-
-.PHONY: mac-install-script
-mac-install-script: out/get-kutti-darwin-arm64.sh
 
 .PHONY: all
 all: linux windows mac mac-intel
 
 .PHONY: installers
-installers: linux-packages windows-installer mac-install-script mac-intel-install-script
+installers: linux-packages windows-installer
 
 .PHONY: resourceclean
 resourceclean:

@@ -19,7 +19,7 @@ $KuttiCmdFiles = (Get-Item "cmd/kutti/*.go") + `
 
 # Synopsis: Show usage
 task . {
-    Write-Host "Usage: Invoke-Build linux|windows|mac|mac-intel|deb|rpm|archlinux|linux-packages|windows-installer|linux-install-script|mac-install-script|mac-intel-install-script|all|installers|clean"
+    Write-Host "Usage: Invoke-Build linux|windows|mac|mac-intel|deb|rpm|archlinux|linux-packages|completions|windows-installer|all|installers|clean"
 }
 
 # Synopsis: Build output directory
@@ -123,17 +123,6 @@ task mac -Outputs out/kutti_darwin_arm64 -Inputs $($KuttiCmdFiles) {
     }
 }
 
-# Synopsis: Build linux installation script
-task linux-install-script -Outputs out/get-kutti-linux-amd64.sh -Inputs build/package/posix-install-script/generate-script.ps1 outputdir, {
-    $env:CURRENT_VERSION = $VersionString
-    $env:GOOS = "linux"
-    $env:GOARCH = "amd64"
-
-    exec {
-        Invoke-Expression  $Inputs[0] > $Outputs
-    }
-}
-
 # Synopsis: Build windows installer
 task windows-installer -Outputs out/kutti-windows-installer.exe -Inputs build/package/kutti-windows-installer/kutti-windows-installer.nsi windows, powershell-completion, {
     makensis -NOCD -V3 "-DVERSION=$($VersionString)" "-DVERSION_FOUR_PART=$($VersionFourPart)" -- $($Inputs[0])
@@ -169,28 +158,6 @@ task archlinux -Outputs "out/kutti-$($VersionString)-1-x86_64.pkg.tar.zst" -Inpu
 # Synopsis: Build all Linux packages
 task linux-packages deb, rpm, archlinux
 
-# Synopsis: Build Intel mac installation script
-task mac-intel-install-script -Outputs out/get-kutti-darwin-amd64.sh -Inputs build/package/posix-install-script/generate-script.ps1 outputdir, {
-    $env:CURRENT_VERSION = $VersionString
-    $env:GOOS = "darwin"
-    $env:GOARCH = "amd64"
-
-    exec {
-        Invoke-Expression  $Inputs[0] > $Outputs
-    }
-}
-
-# Synopsis: Build mac installation script
-task mac-install-script -Outputs out/get-kutti-darwin-arm64.sh -Inputs build/package/posix-install-script/generate-script.ps1 outputdir, {
-    $env:CURRENT_VERSION = $VersionString
-    $env:GOOS = "darwin"
-    $env:GOARCH = "arm64"
-
-    exec {
-        Invoke-Expression  $Inputs[0] > $Outputs
-    }
-}
-
 # Synopsis: Build manpage docs output directory
 task manpagedocsoutputdir -Outputs out\man {
     New-Item out\man -ItemType Directory -ErrorAction Ignore
@@ -219,7 +186,7 @@ task markdowndocs -Outputs out/markdown/kutti.md -Inputs $($KuttiCmdFiles) markd
 task all linux, windows, mac, mac-intel
 
 # Synopsis: Build all installers
-task installers linux-packages, windows-installer, mac-install-script, mac-intel-install-script
+task installers linux-packages, windows-installer
 
 # Synopsis: Build all docs
 task docs manpagedocs, markdowndocs
