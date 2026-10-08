@@ -8,7 +8,7 @@
         },
         {
             "name": "Kutti PowerShell",
-            "commandline": "%SystemRoot%\\system32\\WindowsPowerShell\\v1.0\\powershell.exe -NoExit -c \"$env:Path += ';%LOCALAPPDATA%\\Programs\\kutti'\"",
+            "commandline": "%SystemRoot%\\system32\\WindowsPowerShell\\v1.0\\powershell.exe -NoExit -ExecutionPolicy Bypass -Command \"$env:Path += ';%LOCALAPPDATA%\\Programs\\kutti'; if (Test-Path '%LOCALAPPDATA%\\Programs\\kutti\\kutti-completion.ps1') { . '%LOCALAPPDATA%\\Programs\\kutti\\kutti-completion.ps1' }\"",
             "icon": "%LOCALAPPDATA%\\Programs\\kutti\\kutti.ico",
             "startingDirectory": "%USERPROFILE%"
         }

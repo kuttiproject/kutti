@@ -6,7 +6,7 @@ require (
 	github.com/kuttiproject/driver-hyperv v0.2.2
 	github.com/kuttiproject/driver-qemu v0.1.1
 	github.com/kuttiproject/driver-vbox v0.5.0
-	github.com/kuttiproject/kuttilib v0.5.0
+	github.com/kuttiproject/kuttilib v0.6.0
 	github.com/kuttiproject/kuttilog v0.2.1
 	github.com/kuttiproject/sshclient v0.2.2
 	github.com/kuttiproject/workspace v0.3.1

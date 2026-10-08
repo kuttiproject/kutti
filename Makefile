@@ -5,6 +5,7 @@ VERSION_MINOR ?= 6
 BUILD_NUMBER  ?= 0
 PATCH_NUMBER  ?= 
 VERSION_STRING = $(VERSION_MAJOR).$(VERSION_MINOR).$(BUILD_NUMBER)$(PATCH_NUMBER)
+VERSION_FOUR_PART = $(VERSION_MAJOR).$(VERSION_MINOR).$(BUILD_NUMBER).0
 
 KUTTICMDFILES = cmd/kutti/*.go          \
 				internal/pkg/cli/*.go   \
@@ -19,7 +20,7 @@ usage:
 	@echo "Usage: make linux|windows|mac|mac-intel|linux-install-script|windows-installer|mac-install-script|mac-intel-install-script|all|installers|clean"
 
 out/:
-	mkdir out
+	mkdir -p out
 
 out/kutti_linux_amd64: $(KUTTICMDFILES)
 	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o $@ -ldflags "-X main.version=${VERSION_STRING}" ./cmd/kutti/
@@ -33,8 +34,11 @@ cmd/kutti/rsrc_windows_amd64.syso: cmd/kutti/winres/*
 out/kutti_windows_amd64.exe: $(KUTTICMDFILES) cmd/kutti/rsrc_windows_amd64.syso
 	CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build -o $@ -ldflags "-X main.version=${VERSION_STRING}" ./cmd/kutti/
 
-out/kutti-windows-installer.exe: build/package/kutti-windows-installer/kutti-windows-installer.nsi out/kutti_windows_amd64.exe
-	makensis -NOCD -V3 -- $<
+out/kutti-completion.ps1: $(KUTTICMDFILES) out/
+	go run ./cmd/kutti completion powershell > $@
+
+out/kutti-windows-installer.exe: build/package/kutti-windows-installer/kutti-windows-installer.nsi out/kutti_windows_amd64.exe out/kutti-completion.ps1
+	makensis -NOCD -V3 -DVERSION="${VERSION_STRING}" -DVERSION_FOUR_PART="${VERSION_FOUR_PART}" -- $<
 
 out/kutti_darwin_amd64: $(KUTTICMDFILES)
 	CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 go build -o $@ -ldflags "-X main.version=${VERSION_STRING}" ./cmd/kutti/

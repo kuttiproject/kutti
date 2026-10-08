@@ -8,6 +8,7 @@ Param(
 # Maintain semantic version in the parameters above
 # Also change in cmd/kutti/main.go
 $VersionString = "$($VersionMajor).$($VersionMinor).$($BuildNumber)$($PatchString)"
+$VersionFourPart = "$($VersionMajor).$($VersionMinor).$($BuildNumber).0"
 
 $KuttiCmdFiles = (Get-Item "cmd/kutti/*.go") +          `
 				 (Get-Item "internal/pkg/cli/*.go") +   `
@@ -53,6 +54,13 @@ task windows -Outputs out/kutti_windows_amd64.exe -Inputs {$($KuttiCmdFiles) + (
     }
 }
 
+# Synopsis: Build PowerShell completions
+task powershell-completion -Outputs out/kutti-completion.ps1 -Inputs $($KuttiCmdFiles) outputdir, {
+    exec {
+        go run ./cmd/kutti completion powershell > $($Outputs)
+    }
+}
+
 # Synopsis: Build mac amd64 binary
 task mac-intel -Outputs out/kutti_darwin_amd64 -Inputs $($KuttiCmdFiles) {
     exec {
@@ -85,8 +93,8 @@ task linux-install-script -Outputs out/get-kutti-linux-amd64.sh -Inputs build/pa
 }
 
 # Synopsis: Build windows installer
-task windows-installer -Outputs out/kutti-windows-installer.exe -Inputs build/package/kutti-windows-installer/kutti-windows-installer.nsi windows, {
-	makensis -NOCD -V3 -- $($Inputs[0])
+task windows-installer -Outputs out/kutti-windows-installer.exe -Inputs build/package/kutti-windows-installer/kutti-windows-installer.nsi windows, powershell-completion, {
+	makensis -NOCD -V3 "-DVERSION=$($VersionString)" "-DVERSION_FOUR_PART=$($VersionFourPart)" -- $($Inputs[0])
 }
 
 # Synopsis: Build Intel mac installation script

@@ -15,6 +15,8 @@ github.com/kuttiproject/drivercore v0.3.1 h1:2AV16YAkTVzot07HRCgL3TRdaUdPYmcnFnH
 github.com/kuttiproject/drivercore v0.3.1/go.mod h1:TCr2la1NTL2JA/gbxwyAYA9AXVFsSTVLYhIt03HM6gY=
 github.com/kuttiproject/kuttilib v0.5.0 h1:Pdmo86Cz25EkFBCkbhRwyuJ47G6g9XSg/9mauaFrVJM=
 github.com/kuttiproject/kuttilib v0.5.0/go.mod h1:gvWl9YnGo7+jM04zkdwUdNcp0OdKacuS+Xw7x3qGW+Y=
+github.com/kuttiproject/kuttilib v0.6.0 h1:fGD8tahoSiY66jtzv/hlHJd9a2SGwoUnlia5laTgQRE=
+github.com/kuttiproject/kuttilib v0.6.0/go.mod h1:gvWl9YnGo7+jM04zkdwUdNcp0OdKacuS+Xw7x3qGW+Y=
 github.com/kuttiproject/kuttilog v0.2.1 h1:7UbyfX8Gxcc89093G9EJO9+35My2ta2phivPOLquqWA=
 github.com/kuttiproject/kuttilog v0.2.1/go.mod h1:0vqZ0dekSN6X4Adrmbwaliv1QuogyzjsHHyjBApq6gY=
 github.com/kuttiproject/sshclient v0.2.2 h1:Um2/H7Mw574cJhYlnmY5uZ/4RifmnpQsyIdXzBWiNDE=
