@@ -19,7 +19,7 @@ $KuttiCmdFiles = (Get-Item "cmd/kutti/*.go") + `
 
 # Synopsis: Show usage
 task . {
-    Write-Host "Usage: Invoke-Build linux|windows|mac|mac-intel|deb|rpm|archlinux|linux-packages|completions|windows-installer|all|installers|clean"
+    Write-Host "Usage: Invoke-Build linux|windows|mac|mac-intel|deb|rpm|archlinux|linux-packages|completions|install-script|checksums|windows-installer|all|installers|clean"
 }
 
 # Synopsis: Build output directory
@@ -158,6 +158,25 @@ task archlinux -Outputs "out/kutti-$($VersionString)-1-x86_64.pkg.tar.zst" -Inpu
 # Synopsis: Build all Linux packages
 task linux-packages deb, rpm, archlinux
 
+# Synopsis: Copy universal install script to output
+task install-script -Outputs out/get-kutti.sh -Inputs build/package/install-script/get-kutti.sh outputdir, {
+    Copy-Item $Inputs[0] $Outputs
+}
+
+# Synopsis: Generate SHA256 checksums for release binaries
+task checksums -Outputs out/checksums.txt linux, mac, mac-intel, {
+    $files = @(
+        "out\kutti_linux_amd64",
+        "out\kutti_darwin_amd64",
+        "out\kutti_darwin_arm64"
+    )
+    $lines = foreach ($file in $files) {
+        $hash = (Get-FileHash -Algorithm SHA256 $file).Hash.ToLower()
+        "$hash  $(Split-Path $file -Leaf)"
+    }
+    $lines | Set-Content out\checksums.txt
+}
+
 # Synopsis: Build manpage docs output directory
 task manpagedocsoutputdir -Outputs out\man {
     New-Item out\man -ItemType Directory -ErrorAction Ignore
@@ -186,7 +205,7 @@ task markdowndocs -Outputs out/markdown/kutti.md -Inputs $($KuttiCmdFiles) markd
 task all linux, windows, mac, mac-intel
 
 # Synopsis: Build all installers
-task installers linux-packages, windows-installer
+task installers linux-packages, install-script, checksums, windows-installer
 
 # Synopsis: Build all docs
 task docs manpagedocs, markdowndocs

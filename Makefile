@@ -17,7 +17,7 @@ KUTTICMDFILES = cmd/kutti/*.go          \
 # Targets
 .PHONY: usage
 usage:
-	@echo "Usage: make linux|windows|mac|mac-intel|deb|rpm|archlinux|linux-packages|completions|windows-installer|all|installers|clean"
+	@echo "Usage: make linux|windows|mac|mac-intel|deb|rpm|archlinux|linux-packages|completions|install-script|checksums|windows-installer|all|installers|clean"
 
 out/:
 	mkdir -p out
@@ -49,6 +49,23 @@ out/completions/kutti.fish: $(KUTTICMDFILES) | out/completions
 
 .PHONY: completions
 completions: out/completions/kutti.bash out/completions/_kutti out/completions/kutti.fish out/completions/kutti-completion.ps1
+
+out/get-kutti.sh: build/package/install-script/get-kutti.sh | out/
+	cp $< $@
+
+out/checksums.txt: out/kutti_linux_amd64 out/kutti_darwin_amd64 out/kutti_darwin_arm64
+	cd out && \
+	if command -v sha256sum > /dev/null 2>&1; then \
+		sha256sum kutti_linux_amd64 kutti_darwin_amd64 kutti_darwin_arm64 > checksums.txt; \
+	else \
+		shasum -a 256 kutti_linux_amd64 kutti_darwin_amd64 kutti_darwin_arm64 > checksums.txt; \
+	fi
+
+.PHONY: install-script
+install-script: out/get-kutti.sh
+
+.PHONY: checksums
+checksums: out/checksums.txt
 
 out/kutti-windows-installer.exe: build/package/kutti-windows-installer/kutti-windows-installer.nsi out/kutti_windows_amd64.exe out/completions/kutti-completion.ps1
 	makensis -NOCD -V3 -DVERSION="${VERSION_STRING}" -DVERSION_FOUR_PART="${VERSION_FOUR_PART}" -- $<
@@ -99,7 +116,7 @@ mac: out/kutti_darwin_arm64
 all: linux windows mac mac-intel
 
 .PHONY: installers
-installers: linux-packages windows-installer
+installers: linux-packages install-script checksums windows-installer
 
 .PHONY: resourceclean
 resourceclean:
